@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
+
+# Synthea jar and output (generated locally, never committed)
+/.synthea/

@@ -2,6 +2,7 @@
 -- Role values must match ROLES in lib/access.ts.
 
 CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;  -- trigram indexes for patient name search
 
 -- Demo accounts. The single source of truth for each account's role.
 CREATE TABLE IF NOT EXISTS accounts (
@@ -32,6 +33,9 @@ CREATE TABLE IF NOT EXISTS patients (
 );
 -- "Patients added this week" counts only source = 'intake'.
 CREATE INDEX IF NOT EXISTS patients_source_created_idx ON patients (source, created_at);
+-- Patient search: ILIKE '%term%' on the full name or the MRN.
+CREATE INDEX IF NOT EXISTS patients_name_trgm_idx ON patients USING gin ((first_name || ' ' || last_name) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS patients_mrn_trgm_idx ON patients USING gin (mrn gin_trgm_ops);
 
 CREATE TABLE IF NOT EXISTS visits (
   id            bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -55,6 +59,7 @@ CREATE TABLE IF NOT EXISTS lab_results (
   normal_low  numeric,
   normal_high numeric,
   taken_at    timestamptz NOT NULL,
+  synthea_id  text UNIQUE,            -- set for imported results, so re-imports update in place
   created_at  timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS lab_results_patient_code_idx ON lab_results (patient_id, code, taken_at DESC);
@@ -68,7 +73,8 @@ CREATE TABLE IF NOT EXISTS medications (
   dose       text,
   status     text NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'stopped')),
   started_on date,
-  stopped_on date
+  stopped_on date,
+  synthea_id text UNIQUE              -- <patient id>:<RxNorm code>, one row per medication
 );
 CREATE INDEX IF NOT EXISTS medications_patient_idx ON medications (patient_id);
 
@@ -78,7 +84,8 @@ CREATE TABLE IF NOT EXISTS allergies (
   substance   text NOT NULL,
   reaction    text,
   severity    text CHECK (severity IN ('mild', 'moderate', 'severe')),
-  recorded_on date
+  recorded_on date,
+  synthea_id  text UNIQUE
 );
 CREATE INDEX IF NOT EXISTS allergies_patient_idx ON allergies (patient_id);
 
@@ -89,7 +96,8 @@ CREATE TABLE IF NOT EXISTS conditions (
   name        text NOT NULL,
   status      text NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'resolved')),
   onset_on    date,
-  resolved_on date
+  resolved_on date,
+  synthea_id  text UNIQUE
 );
 CREATE INDEX IF NOT EXISTS conditions_patient_idx ON conditions (patient_id);
 
