@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Carebase sign in</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#C9D4FF}a:hover{color:#FFFFFF}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(900px 520px at 88% -8%, rgba(124,108,255,0.22), transparent 62%), radial-gradient(760px 480px at 4% 104%, rgba(45,212,191,0.14), transparent 60%), #EDF0FA; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #0F172A">
+
+<div role="note" style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 10px 16px; background: #FFF4D6; color: #7A4B00; font-size: 13px; font-weight: 500; text-align: center">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+<span>Synthetic data only. Every patient in this demo is generated and fictional.</span>
+</div>
+
+<div style="flex: 1; display: flex; flex-wrap: wrap; gap: 24px; padding: 24px; box-sizing: border-box">
+
+<section style="flex: 1 1 380px; max-width: 600px; background: radial-gradient(520px 260px at 0% 0%, rgba(45,212,191,0.22), transparent 70%), radial-gradient(620px 320px at 100% 100%, rgba(124,92,255,0.38), transparent 70%), linear-gradient(160deg, #25216A, #15163F); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 24px 60px rgba(30,26,90,0.35); border-radius: 24px; padding: 44px; box-sizing: border-box; color: #FFFFFF; display: flex; flex-direction: column; justify-content: space-between; gap: 40px">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="width: 44px; height: 44px; border-radius: 12px; background: {{accent}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"></path><path d="M3 12h18"></path><rect x="5" y="5" width="14" height="14" rx="4"></rect></svg>
+</div>
+<div style="display: flex; flex-direction: column">
+<span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 20px">Carebase</span>
+<span style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #B8C2E0">Clinic operations</span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 20px">
+<h1 style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 40px; line-height: 1.15">AI operations for small clinics</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #C9D1EA">Turns intake paperwork into patient records, tracks each patient's health data over time, and gives staff an assistant that answers with sources and knows its limits.</p>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 8px">
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<div style="flex: none; width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path><path d="M9 15l2 2 4-4"></path></svg></div>
+<span style="font-size: 14px; line-height: 1.5; color: #E4E9F7; padding-top: 6px">Intake forms and referral letters, read by AI and checked by staff before anything is saved</span>
+</div>
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<div style="flex: none; width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg></div>
+<span style="font-size: 14px; line-height: 1.5; color: #E4E9F7; padding-top: 6px">Patient timelines with lab trends, wearable data and fast search</span>
+</div>
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<div style="flex: none; width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+<span style="font-size: 14px; line-height: 1.5; color: #E4E9F7; padding-top: 6px">An assistant that links every answer to its sources and declines clinical decisions</span>
+</div>
+</div>
+</div>
+
+<a href="Tests.dc.html" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px; border-radius: 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); text-decoration: none">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 15px; font-weight: 600; color: #FFFFFF">View test results</span>
+<span style="font-size: 13px; color: #B8C2E0">See how the assistant is checked. No sign-in needed.</span>
+</div>
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg>
+</a>
+</section>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; align-items: center; justify-content: center; padding: 24px 0">
+<div style="width: 100%; max-width: 520px; background: #FFFFFF; border-radius: 24px; padding: 40px; box-sizing: border-box; border: 1px solid rgba(214,220,240,0.9); box-shadow: 0 1px 2px rgba(40,52,120,0.05), 0 24px 60px rgba(40,52,120,0.12); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 28px">Sign in to the demo</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: #5B6478">Choose a role. Each one sees different screens and data.</p>
+</div>
+
+<div role="group" aria-label="Choose a role" style="display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{roles}}" as="r" hint-placeholder-count="3">
+<button type="button" onClick="{{r.pick}}" aria-pressed="{{r.pressed}}" style="display: flex; align-items: center; gap: 16px; width: 100%; padding: 16px; border-radius: 16px; border: 2px solid {{r.border}}; background: {{r.bg}}; text-align: left; cursor: pointer">
+<div style="flex: none; width: 44px; height: 44px; border-radius: 12px; background: {{r.iconBg}}; color: {{r.iconFg}}; display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px">{{r.short}}</div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 16px; font-weight: 600; color: #0F172A">{{r.name}}</span>
+<span style="font-size: 13px; line-height: 1.45; color: #5B6478">{{r.sees}}</span>
+<span style="font-size: 12px; color: #5B6478">Demo account: {{r.account}}</span>
+</div>
+<sc-if value="{{r.on}}" hint-placeholder-val="{{false}}">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 12l3 3 5-6"></path></svg>
+</sc-if>
+</button>
+</sc-for>
+</div>
+
+<button type="button" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 52px; border: none; border-radius: 14px; background: {{accent}}; color: #FFFFFF; font-size: 16px; font-weight: 600; cursor: pointer">
+<span>Continue as {{roleName}}</span>
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg>
+</button>
+</div>
+</main>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3056D3","options":["#3056D3","#2563EB","#0F766E"]},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { role: 'clinician' };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#3056D3';
+    const current = (this.state && this.state.role) || 'clinician';
+    const list = [
+      { key: 'frontdesk', short: 'FD', name: 'Front Desk', sees: 'Intake, patient records without labs, and your tasks', account: 'frontdesk@carebase.demo' },
+      { key: 'clinician', short: 'CL', name: 'Clinician', sees: 'Patient records with labs, the assistant, and your tasks', account: 'clinician@carebase.demo' },
+      { key: 'admin', short: 'AD', name: 'Admin', sees: 'Everything, plus the audit log, roles, and de-identified export', account: 'admin@carebase.demo' }
+    ];
+    const roles = list.map((r) => {
+      const on = r.key === current;
+      return Object.assign({}, r, {
+        on: on,
+        pressed: on ? 'true' : 'false',
+        border: on ? accent : '#E3E7F2',
+        bg: on ? '#F4F6FF' : '#FFFFFF',
+        iconBg: on ? accent : '#EEF0FB',
+        iconFg: on ? '#FFFFFF' : '#3B4560',
+        pick: () => this.setState({ role: r.key })
+      });
+    });
+    const picked = list.find((r) => r.key === current);
+    return { accent: accent, roles: roles, roleName: picked ? picked.name : 'Clinician' };
+  }
+}
+</script>
+</body>
+</html>

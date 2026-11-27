@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Carebase dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(900px 520px at 88% -8%, rgba(124,108,255,0.22), transparent 62%), radial-gradient(760px 480px at 4% 104%, rgba(45,212,191,0.14), transparent 60%), #EDF0FA; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #0F172A">
+
+<div role="note" style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 7px 16px; background: rgba(255,244,214,0.9); color: #7A4B00; font-size: 12px; font-weight: 500; text-align: center">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+<span>Synthetic data only. Every patient in this demo is generated and fictional.</span>
+</div>
+
+<div style="flex: 1; display: flex; flex-wrap: wrap">
+
+<nav aria-label="Main" style="flex: 1 1 236px; background: rgba(255,255,255,0.78); backdrop-filter: blur(14px); border-right: 1px solid rgba(214,220,240,0.8); box-shadow: 8px 0 30px rgba(40,52,120,0.05); padding: 22px 16px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 26px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 6px">
+<div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(145deg, #4C72F0, #2847C4); box-shadow: 0 6px 14px rgba(48,86,211,0.35); display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"></path><path d="M3 12h18"></path><rect x="5" y="5" width="14" height="14" rx="4"></rect></svg>
+</div>
+<div style="display: flex; flex-direction: column">
+<span style="font-weight: 700; font-size: 17px">Carebase</span>
+<span style="font-size: 10px; letter-spacing: 0.14em; color: #6B7287">CLINIC OPS</span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="padding: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #6B7287">CLINICAL</span>
+<a href="#dashboard" aria-current="page" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; background: #EEF2FF; border: 1px solid #C9D5FB; color: #2442A8; font-size: 14px; font-weight: 600; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+<span>Dashboard</span></a>
+<a href="#patient" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"></path><path d="M17 4a4 4 0 0 1 0 8"></path><path d="M22 21c0-3-1.8-5.6-4.5-6.6"></path></svg>
+<span>Patients</span></a>
+<sc-if value="{{showIntake}}" hint-placeholder-val="{{true}}">
+<a href="#intake" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path><path d="M12 12v6"></path><path d="M9 15h6"></path></svg>
+<span style="flex: 1">Intake</span>
+<span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: #2F5BEA; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{intakeCount}}</span></a>
+</sc-if>
+<a href="#tasks" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 12l3 3 5-6"></path></svg>
+<span style="flex: 1">Tasks</span>
+<span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: #E5484D; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{taskCount}}</span></a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="padding: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #6B7287">SYSTEM</span>
+<sc-if value="{{showAdmin}}" hint-placeholder-val="{{false}}">
+<a href="#admin" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.4-8 9-4.6-.6-8-4.5-8-9V6z"></path></svg>
+<span>Admin</span></a>
+</sc-if>
+<a href="Tests.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"></path><path d="M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>
+<span>Tests</span></a>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; border: 1px solid #E8EBF3; background: #FAFBFE">
+<div style="position: relative; flex: none; width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(145deg, #4C72F0, #2847C4); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px">{{me.short}}
+<span style="position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; background: #22C55E; border: 2px solid #FFFFFF"></span></div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+<span style="font-size: 13px; font-weight: 600">{{me.name}}</span>
+<span style="font-size: 12px; color: #6B7287">{{me.role}}</span>
+</div>
+<a href="Main.dc.html" aria-label="Switch role" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; color: #6B7287">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l4-4 4 4"></path><path d="M8 15l4 4 4-4"></path></svg></a>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 32px; background: rgba(255,255,255,0.7); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(214,220,240,0.8)">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #6B7287">CAREBASE <span aria-hidden="true">›</span> <span style="color: #2442A8">OVERVIEW</span></span>
+<h1 style="margin: 0; font-size: 20px; font-weight: 700">Dashboard</h1>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<label style="display: flex; align-items: center; gap: 10px; width: 320px; max-width: 100%; height: 44px; padding: 0 12px 0 14px; box-sizing: border-box; border-radius: 12px; background: #FFFFFF; border: 1px solid #E1E6F3; box-shadow: 0 2px 8px rgba(40,52,120,0.05); color: #6B7287">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search patients</span>
+<input type="search" placeholder="Search patients…" style="flex: 1; min-width: 0; border: none; outline: none; background: transparent; font-family: inherit; font-size: 14px; color: #0F172A">
+<span style="padding: 2px 7px; border-radius: 6px; background: #F1F3FA; border: 1px solid #E1E6F3; font-size: 11px; font-weight: 600; color: #5B6478">⌘K</span>
+</label>
+<a href="#tasks" aria-label="{{bellLabel}}" style="position: relative; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #FFFFFF; border: 1px solid #E1E6F3; box-shadow: 0 2px 8px rgba(40,52,120,0.05); color: #3B4560">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>
+<span style="position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box; border-radius: 999px; background: #E5484D; color: #FFFFFF; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{dueToday}}</span></a>
+<div style="display: flex; align-items: center; gap: 6px">
+<div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(145deg, #4C72F0, #2847C4); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px">{{me.short}}</div>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7287" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+</div>
+</div>
+</header>
+
+<main style="padding: 28px 32px 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+<section aria-label="Summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="4">
+<a href="{{c.href}}" style="display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 20px; background: linear-gradient(180deg, #FFFFFF, #FBFCFF); border: 1px solid rgba(214,220,240,0.9); box-shadow: 0 1px 2px rgba(40,52,120,0.05), 0 14px 34px rgba(40,52,120,0.09); text-decoration: none; color: #0F172A">
+<div style="display: flex; align-items: flex-start; justify-content: space-between">
+<div style="width: 42px; height: 42px; border-radius: 13px; background: {{c.chipBg}}; color: {{c.chipFg}}; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center">
+<sc-if value="{{c.iPeople}}" hint-placeholder-val="{{true}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"></path><path d="M17 4a4 4 0 0 1 0 8"></path></svg></sc-if>
+<sc-if value="{{c.iTask}}" hint-placeholder-val="{{false}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 12l3 3 5-6"></path></svg></sc-if>
+<sc-if value="{{c.iClock}}" hint-placeholder-val="{{false}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></sc-if>
+<sc-if value="{{c.iFile}}" hint-placeholder-val="{{false}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path></svg></sc-if>
+<sc-if value="{{c.iPulse}}" hint-placeholder-val="{{false}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg></sc-if>
+<sc-if value="{{c.iFlask}}" hint-placeholder-val="{{false}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"></path><path d="M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"></path></svg></sc-if>
+</div>
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="#8A91A6"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 32px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em">{{c.value}}</span>
+<span style="font-size: 14px; color: #5B6478">{{c.label}}</span>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid #EEF0F6; font-size: 12px">
+<span style="color: #5B6478">{{c.meta}}</span>
+<span style="font-weight: 600; color: #2442A8">{{c.link}} →</span>
+</div>
+</a>
+</sc-for>
+</section>
+
+<section aria-labelledby="spot-title" style="display: flex; flex-direction: column; gap: 20px; padding: 24px; border-radius: 26px; background: radial-gradient(560px 300px at 50% 30%, rgba(45,212,191,0.16), transparent 70%), radial-gradient(420px 220px at 100% 0%, rgba(56,189,248,0.14), transparent 70%), linear-gradient(165deg, #0F3142, #0A1C2B); border: 1px solid rgba(94,234,212,0.14); color: #FFFFFF; box-shadow: 0 28px 70px rgba(8,30,45,0.4)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+<div style="display: flex; align-items: center; gap: 14px">
+<div style="width: 44px; height: 44px; border-radius: 13px; background: linear-gradient(145deg, #2DD4BF, #0E9F8E); box-shadow: 0 0 26px rgba(45,212,191,0.5); display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 3px">
+<h2 id="spot-title" style="margin: 0; font-size: 18px; font-weight: 700">Patient spotlight</h2>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #A7C4CF">{{spot.sub}}</span>
+</div>
+</div>
+<sc-if value="{{showLabs}}" hint-placeholder-val="{{true}}">
+<div role="group" aria-label="Lab test" style="display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08)">
+<sc-for list="{{pills}}" as="pl" hint-placeholder-count="3">
+<button type="button" onClick="{{pl.pick}}" aria-pressed="{{pl.pressed}}" style="min-height: 36px; padding: 0 16px; border-radius: 10px; border: none; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; background: {{pl.bg}}; color: {{pl.fg}}; box-shadow: {{pl.glow}}">{{pl.label}}</button>
+</sc-for>
+</div>
+</sc-if>
+<a href="#patient" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: #FFFFFF; font-size: 13px; font-weight: 600; text-decoration: none">Open Record
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 18px">
+<div style="flex: 2 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 18px 20px; border-radius: 20px; background: rgba(3,16,26,0.45); border: 1px solid rgba(255,255,255,0.08)">
+<sc-if value="{{showLabs}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px">
+<div style="display: flex; align-items: baseline; gap: 10px">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.14em; color: #7FD8CB">{{lab.upper}} · LAST 6 MONTHS</span>
+</div>
+<span style="font-size: 12px; color: #A7C4CF">{{lab.rangeLabel}}</span>
+</div>
+<div style="position: relative; width: 100%; aspect-ratio: 640 / 260">
+<svg role="img" aria-label="{{lab.aria}}" viewBox="0 0 640 260" width="100%" height="100%">
+<defs>
+<linearGradient id="cbArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBBF24" stop-opacity="0.28"></stop><stop offset="1" stop-color="#FBBF24" stop-opacity="0"></stop></linearGradient>
+</defs>
+<sc-for list="{{grid}}" as="g" hint-placeholder-count="5">
+<line x1="48" x2="616" y1="{{g.y}}" y2="{{g.y}}" stroke="rgba(255,255,255,0.07)"></line>
+<text x="36" y="{{g.ty}}" text-anchor="end" fill="#7E9AA6" font-size="11" font-family="JetBrains Mono, monospace">{{g.label}}</text>
+</sc-for>
+<rect x="48" y="{{band.y}}" width="568" height="{{band.h}}" fill="rgba(45,212,191,0.13)" stroke="rgba(45,212,191,0.45)" stroke-dasharray="4 4"></rect>
+<text x="610" y="{{band.ty}}" text-anchor="end" fill="#5EEAD4" font-size="11" font-family="JetBrains Mono, monospace">NORMAL RANGE</text>
+<polygon points="{{area}}" fill="url(#cbArea)"></polygon>
+<polyline points="{{line}}" fill="none" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>
+<sc-for list="{{pts}}" as="pt" hint-placeholder-count="6">
+<circle cx="{{pt.x}}" cy="{{pt.y}}" r="{{pt.r}}" fill="#0A1C2B" stroke="{{pt.c}}" stroke-width="3"></circle>
+<text x="{{pt.x}}" y="248" text-anchor="middle" fill="#7E9AA6" font-size="11" font-family="JetBrains Mono, monospace">{{pt.m}}</text>
+</sc-for>
+</svg>
+<div style="position: absolute; left: {{tip.left}}; top: {{tip.top}}; transform: translate(calc(-100% - 18px), -50%); min-width: 170px; padding: 12px 14px; border-radius: 14px; background: rgba(12,20,30,0.92); border: 1px solid rgba(251,191,36,0.45); box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px"><span style="font-size: 13px; font-weight: 700">{{lab.name}}</span><span style="width: 8px; height: 8px; border-radius: 50%; background: #FBBF24; box-shadow: 0 0 10px #FBBF24"></span></div>
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #FCD34D">ABOVE RANGE</span>
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 6px; margin-top: 2px; border-top: 1px solid rgba(255,255,255,0.1)"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; color: #7E9AA6">12 NOV</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700">{{tip.value}}</span></div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{hideLabs}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; border-radius: 16px; border: 1px dashed rgba(94,234,212,0.3); background: rgba(45,212,191,0.04)">
+<div style="width: 52px; height: 52px; border-radius: 16px; background: rgba(45,212,191,0.12); display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5EEAD4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></div>
+<span style="font-size: 16px; font-weight: 700">Lab results are hidden for Front Desk</span>
+<span style="max-width: 360px; font-size: 13px; line-height: 1.5; color: #A7C4CF">Clinicians and Admins can see this patient's lab trends. Your task is to book the follow-up visit.</span>
+</div>
+</sc-if>
+</div>
+
+<div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.14em; color: #7FD8CB">WEARABLES · LAST 14 DAYS</span>
+<sc-for list="{{wear}}" as="w" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.1)">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #A7C4CF">{{w.label}}</span>
+<span style="font-size: 11px; color: #7E9AA6">avg</span>
+</div>
+<span style="font-size: 22px; font-weight: 800">{{w.value}} <span style="font-size: 12px; font-weight: 500; color: #A7C4CF">{{w.unit}}</span></span>
+<svg aria-hidden="true" viewBox="0 0 200 40" width="100%" height="40" preserveAspectRatio="none"><polyline points="{{w.pts}}" fill="none" stroke="{{w.c}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline></svg>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px; font-size: 12px; color: #C9D8DE">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #2DD4BF"></span>In range</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FBBF24"></span>Above range</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #F87171"></span>Below range</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; color: #7E9AA6">Synthetic patient · values for demo only</span>
+</div>
+</section>
+
+<section aria-labelledby="urgent-title" style="display: flex; flex-direction: column; gap: 20px; padding: 24px; border-radius: 24px; background: radial-gradient(520px 220px at 12% -10%, rgba(45,212,191,0.22), transparent 70%), radial-gradient(620px 260px at 100% 0%, rgba(124,92,255,0.38), transparent 70%), linear-gradient(160deg, #25216A, #15163F); border: 1px solid rgba(255,255,255,0.08); color: #FFFFFF; box-shadow: 0 24px 60px rgba(30,26,90,0.35)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(145deg, #2DD4BF, #0E9F8E); box-shadow: 0 0 22px rgba(45,212,191,0.45); display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 12l3 3 5-6"></path></svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 id="urgent-title" style="margin: 0; font-size: 16px; font-weight: 700">Most urgent tasks</h2>
+<span style="font-size: 12px; color: #C3C2E6">{{urgentSub}}</span>
+</div>
+</div>
+<a href="#tasks" style="display: inline-flex; align-items: center; min-height: 38px; padding: 0 18px; border-radius: 999px; background: linear-gradient(145deg, #4C72F0, #2F55E0); box-shadow: 0 8px 20px rgba(47,85,224,0.4); color: #FFFFFF; font-size: 13px; font-weight: 600; text-decoration: none">View all</a>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px">
+<sc-for list="{{tasks}}" as="t" hint-placeholder-count="3">
+<article style="display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.12); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06)">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; background: {{t.tagBg}}; color: {{t.tagFg}}"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{t.tagFg}}"></span>{{t.tag}}</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="#9A99C4"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h3 style="margin: 0; font-size: 16px; font-weight: 600; line-height: 1.35">{{t.title}}</h3>
+<span style="font-size: 12px; color: #C3C2E6">{{t.detail}}</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06)">
+<div style="flex: none; width: 30px; height: 30px; border-radius: 50%; background: {{t.avatarBg}}; color: #1A1A45; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px">{{t.initials}}</div>
+<div style="display: flex; flex-direction: column; min-width: 0">
+<span style="font-size: 11px; color: #C3C2E6">{{t.whoLabel}}</span>
+<span style="font-size: 13px; font-weight: 600">{{t.patient}}</span>
+</div>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto">
+<a href="#patient" style="font-size: 14px; font-weight: 600; color: {{t.tagFg}}; text-decoration: none">Open Record</a>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #C3C2E6">
+<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4"></path><path d="M8 3v4"></path><path d="M3 11h18"></path></svg>
+{{t.due}}</span>
+</div>
+</article>
+</sc-for>
+</div>
+</section>
+</main>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"enum","options":["frontdesk","clinician","admin"],"default":"clinician"},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lab: 'hba1c' };
+  }
+  spotVals(role) {
+    const key = (this.state && this.state.lab) || 'hba1c';
+    const labs = {
+      hba1c: { short: 'HbA1c', name: 'HbA1c', unit: '%', lo: 4.0, hi: 5.6, min: 4, max: 9, vals: [6.9, 7.1, 7.2, 7.4, 7.6, 7.9], rangeLabel: 'Normal range 4.0–5.6%' },
+      glucose: { short: 'Glucose', name: 'Fasting glucose', unit: 'mmol/L', lo: 3.9, hi: 5.6, min: 3, max: 9, vals: [6.8, 7.0, 6.9, 7.3, 7.6, 7.8], rangeLabel: 'Normal range 3.9–5.6 mmol/L' },
+      ldl: { short: 'LDL', name: 'LDL cholesterol', unit: 'mmol/L', lo: 0, hi: 3.0, min: 0, max: 6, vals: [3.9, 4.1, 4.0, 4.3, 4.4, 4.6], rangeLabel: 'Target under 3.0 mmol/L' }
+    };
+    const L = labs[key];
+    const months = ['JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV'];
+    const X = (i) => Math.round(48 + i * (568 / 5));
+    const Y = (v) => Math.round(220 - ((v - L.min) / (L.max - L.min)) * 200);
+    const pts = L.vals.map((v, i) => ({ x: X(i), y: Y(v), m: months[i], c: v > L.hi ? '#FBBF24' : (v < L.lo ? '#F87171' : '#2DD4BF'), r: i === 5 ? 7 : 5 }));
+    const line = pts.map((p) => p.x + ',' + p.y).join(' ');
+    const grid = [0, 1, 2, 3, 4].map((k) => { const v = L.min + (L.max - L.min) * k / 4; const y = Y(v); return { y, ty: y + 4, label: String(Math.round(v * 10) / 10) }; });
+    const bandTop = Y(L.hi), bandBottom = Y(Math.max(L.lo, L.min));
+    const last = pts[5];
+    const pills = Object.keys(labs).map((k) => ({
+      label: labs[k].short,
+      pressed: k === key ? 'true' : 'false',
+      bg: k === key ? 'linear-gradient(145deg, #2DD4BF, #0E9F8E)' : 'transparent',
+      fg: k === key ? '#04211D' : '#C9D8DE',
+      glow: k === key ? '0 0 18px rgba(45,212,191,0.45)' : 'none',
+      pick: () => this.setState({ lab: k })
+    }));
+    const spark = (arr) => arr.map((v, i) => Math.round(i * (200 / (arr.length - 1))) + ',' + v).join(' ');
+    return {
+      showLabs: role !== 'frontdesk',
+      hideLabs: role === 'frontdesk',
+      spot: { sub: role === 'frontdesk' ? 'MARCUS HOLLOWAY · MRN 48213 · FOLLOW-UP TO BOOK' : 'MARCUS HOLLOWAY · MRN 48213 · ' + L.short.toUpperCase() + ' ABOVE RANGE' },
+      lab: { name: L.name, upper: L.short.toUpperCase(), rangeLabel: L.rangeLabel, aria: L.name + ' over the last 6 months, latest ' + L.vals[5] + ' ' + L.unit + ', above range' },
+      pills, grid, pts, line,
+      area: line + ' 616,220 48,220',
+      band: { y: bandTop, h: Math.max(bandBottom - bandTop, 2), ty: bandTop + 15 },
+      tip: { left: (last.x / 640 * 100) + '%', top: (last.y / 260 * 100) + '%', value: L.vals[5] + ' ' + L.unit },
+      wear: [
+        { label: 'HEART RATE', value: '78', unit: 'bpm', c: '#F87171', pts: spark([22, 18, 24, 20, 26, 21, 17, 23, 19, 25, 20, 16, 22, 18]) },
+        { label: 'SLEEP', value: '6h 10m', unit: 'per night', c: '#A78BFA', pts: spark([20, 24, 18, 26, 22, 28, 24, 20, 26, 22, 30, 24, 22, 26]) },
+        { label: 'STEPS', value: '4,820', unit: 'per day', c: '#2DD4BF', pts: spark([30, 26, 28, 22, 24, 18, 22, 20, 16, 18, 14, 18, 12, 14]) }
+      ]
+    };
+  }
+  renderVals() {
+    const role = this.props.role ?? 'clinician';
+    const chips = {
+      blue: { chipBg: '#EAF0FF', chipFg: '#2F5BEA' },
+      green: { chipBg: '#E3F6EC', chipFg: '#15803D' },
+      amber: { chipBg: '#FFF1D6', chipFg: '#B45309' },
+      purple: { chipBg: '#F0EAFE', chipFg: '#6D4AE8' }
+    };
+    const C = (icon, color, value, label, meta, link, href) => Object.assign({
+      value, label, meta, link, href,
+      iPeople: icon === 'people', iTask: icon === 'task', iClock: icon === 'clock',
+      iFile: icon === 'file', iPulse: icon === 'pulse', iFlask: icon === 'flask'
+    }, chips[color]);
+    const tags = {
+      overdue: { tag: 'OVERDUE', tagBg: 'rgba(248,113,113,0.16)', tagFg: '#FDA4AF' },
+      today: { tag: 'DUE TODAY', tagBg: 'rgba(251,191,36,0.16)', tagFg: '#FCD34D' },
+      soon: { tag: 'DUE TOMORROW', tagBg: 'rgba(96,165,250,0.18)', tagFg: '#93C5FD' }
+    };
+    const T = (k, title, detail, patient, initials, avatarBg, due, whoLabel) => Object.assign({ title, detail, patient, initials, avatarBg, due, whoLabel: whoLabel || 'Patient' }, tags[k]);
+    const data = {
+      frontdesk: {
+        me: { short: 'FD', name: 'Demo Front Desk', role: 'Front Desk' },
+        intakeCount: '3', taskCount: '5', dueToday: '2',
+        cards: [
+          C('file', 'blue', '3', 'Intake forms waiting for review', '2 flagged', 'Open Intake', '#intake'),
+          C('task', 'purple', '5', 'Your open tasks', '1 overdue', 'Open Tasks', '#tasks'),
+          C('clock', 'amber', '2', 'Tasks due today', 'Next by 12:00', 'Open Tasks', '#tasks'),
+          C('people', 'green', '4', 'Patients added this week', '+2 since Monday', 'Open Patients', '#patient')
+        ],
+        tasks: [
+          T('overdue', 'Call to book a follow-up visit', 'Requested after a lab review', 'Marcus Holloway', 'MH', '#FDA4AF', 'Was due 26 Nov'),
+          T('today', 'Call to book a follow-up visit', 'Requested after a lab review', 'Aisha Rahman', 'AR', '#FCD34D', 'Due today'),
+          T('soon', 'Ask for an updated insurance card', 'Card on file has expired', 'David Chen', 'DC', '#93C5FD', 'Due tomorrow')
+        ]
+      },
+      clinician: {
+        me: { short: 'CL', name: 'Demo Clinician', role: 'Clinician' },
+        intakeCount: '3', taskCount: '7', dueToday: '3',
+        cards: [
+          C('task', 'purple', '7', 'Your open tasks', '1 overdue', 'Open Tasks', '#tasks'),
+          C('clock', 'amber', '3', 'Tasks due today', 'Next by 11:00', 'Open Tasks', '#tasks'),
+          C('pulse', 'blue', '9', 'Out-of-range lab results this week', '4 high, 5 low', 'Open Tasks', '#tasks'),
+          C('people', 'green', '200', 'Patients', '+4 this week', 'Open Patients', '#patient')
+        ],
+        tasks: [
+          T('overdue', 'Review high HbA1c result', 'HbA1c 7.9%, above the normal range', 'Marcus Holloway', 'MH', '#FDA4AF', 'Was due 26 Nov'),
+          T('today', 'Review low potassium result', 'Potassium 3.1 mmol/L, below the normal range', 'Sofia Reyes', 'SR', '#FCD34D', 'Due today'),
+          T('soon', 'Review high LDL cholesterol result', 'LDL 4.6 mmol/L, above the normal range', 'Omar Farouk', 'OF', '#93C5FD', 'Due tomorrow')
+        ]
+      },
+      admin: {
+        me: { short: 'AD', name: 'Demo Admin', role: 'Admin' },
+        intakeCount: '3', taskCount: '12', dueToday: '5',
+        cards: [
+          C('people', 'green', '200', 'Patients', '+4 this week', 'Open Patients', '#patient'),
+          C('task', 'purple', '12', 'All open tasks', '2 overdue', 'Open Tasks', '#tasks'),
+          C('file', 'blue', '3', 'Intake forms waiting for review', '2 flagged', 'Open Intake', '#intake'),
+          C('flask', 'amber', '46 of 48', 'Tests passing', '2 failing', 'Open Tests', 'Tests.dc.html')
+        ],
+        tasks: [
+          T('overdue', 'Review high HbA1c result', 'Assigned to Demo Clinician', 'Marcus Holloway', 'MH', '#FDA4AF', 'Was due 26 Nov'),
+          T('overdue', 'Call to book a follow-up visit', 'Assigned to Demo Front Desk', 'Marcus Holloway', 'MH', '#FDA4AF', 'Was due 26 Nov'),
+          T('today', 'Review low potassium result', 'Assigned to Demo Clinician', 'Sofia Reyes', 'SR', '#FCD34D', 'Due today')
+        ]
+      }
+    };
+    const d = data[role] || data.clinician;
+    return Object.assign(this.spotVals(role), {
+      me: d.me,
+      cards: d.cards,
+      tasks: d.tasks,
+      intakeCount: d.intakeCount,
+      taskCount: d.taskCount,
+      dueToday: d.dueToday,
+      bellLabel: d.dueToday + ' tasks due today',
+      showIntake: role !== 'clinician',
+      showAdmin: role === 'admin',
+      urgentSub: role === 'admin' ? 'Across the whole clinic, most urgent first' : 'Assigned to you, most urgent first'
+    });
+  }
+}
+</script>
+</body>
+</html>

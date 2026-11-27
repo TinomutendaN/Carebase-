@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Carebase tasks</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(900px 520px at 88% -8%, rgba(124,108,255,0.22), transparent 62%), radial-gradient(760px 480px at 4% 104%, rgba(45,212,191,0.14), transparent 60%), #EDF0FA; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #0F172A">
+
+<div role="note" style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 7px 16px; background: rgba(255,244,214,0.9); color: #7A4B00; font-size: 12px; font-weight: 500; text-align: center">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+<span>Synthetic data only. Every patient in this demo is generated and fictional.</span>
+</div>
+
+<div style="flex: 1; display: flex; flex-wrap: wrap">
+
+<nav aria-label="Main" style="flex: 1 1 236px; background: rgba(255,255,255,0.78); backdrop-filter: blur(14px); border-right: 1px solid rgba(214,220,240,0.8); box-shadow: 8px 0 30px rgba(40,52,120,0.05); padding: 22px 16px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 26px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 6px">
+<div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(145deg, #4C72F0, #2847C4); box-shadow: 0 6px 14px rgba(48,86,211,0.35); display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"></path><path d="M3 12h18"></path><rect x="5" y="5" width="14" height="14" rx="4"></rect></svg>
+</div>
+<div style="display: flex; flex-direction: column">
+<span style="font-weight: 700; font-size: 17px">Carebase</span>
+<span style="font-size: 10px; letter-spacing: 0.14em; color: #6B7287">CLINIC OPS</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="padding: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #6B7287">CLINICAL</span>
+<a href="Dashboard.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+<span>Dashboard</span></a>
+<a href="PatientPage.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"></path><path d="M17 4a4 4 0 0 1 0 8"></path><path d="M22 21c0-3-1.8-5.6-4.5-6.6"></path></svg>
+<span>Patients</span></a>
+<sc-if value="{{showIntake}}" hint-placeholder-val="{{false}}">
+<a href="Intake.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path><path d="M12 12v6"></path><path d="M9 15h6"></path></svg>
+<span style="flex: 1">Intake</span>
+<span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: #2F5BEA; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">3</span></a>
+</sc-if>
+<a href="#tasks" aria-current="page" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; background: #EEF2FF; border: 1px solid #C9D5FB; color: #2442A8; font-size: 14px; font-weight: 600; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 12l3 3 5-6"></path></svg>
+<span style="flex: 1">Tasks</span>
+<span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: #E5484D; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{counts.open}}</span></a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="padding: 0 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: #6B7287">SYSTEM</span>
+<sc-if value="{{showAdmin}}" hint-placeholder-val="{{false}}">
+<a href="#admin" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.4-8 9-4.6-.6-8-4.5-8-9V6z"></path></svg>
+<span>Admin</span></a>
+</sc-if>
+<a href="Tests.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent; color: #3B4560; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"></path><path d="M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>
+<span>Tests</span></a>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; border: 1px solid #E8EBF3; background: #FAFBFE">
+<div style="flex: none; width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(145deg, #4C72F0, #2847C4); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px">{{me.short}}</div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+<span style="font-size: 13px; font-weight: 600">{{me.name}}</span>
+<span style="font-size: 12px; color: #6B7287">{{me.role}}</span>
+</div>
+<a href="Main.dc.html" aria-label="Switch role" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; color: #6B7287">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l4-4 4 4"></path><path d="M8 15l4 4 4-4"></path></svg></a>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 32px; background: rgba(255,255,255,0.7); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(214,220,240,0.8)">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #6B7287">CAREBASE <span aria-hidden="true">›</span> <span style="color: #2442A8">TASKS</span></span>
+<h1 style="margin: 0; font-size: 20px; font-weight: 700">{{pageTitle}}</h1>
+</div>
+<span style="font-size: 13px; color: #5B6478">Friday, 27 November</span>
+</header>
+
+<div style="padding: 24px 32px 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+
+<section aria-label="Task summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px">
+<sc-for list="{{stats}}" as="st" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 18px; background: linear-gradient(180deg, #FFFFFF, #FBFCFF); border: 1px solid rgba(214,220,240,0.9); box-shadow: 0 1px 2px rgba(40,52,120,0.05), 0 14px 34px rgba(40,52,120,0.08)">
+<span style="flex: none; width: 12px; height: 40px; border-radius: 6px; background: {{st.c}}; box-shadow: 0 0 14px {{st.glow}}"></span>
+<div style="display: flex; flex-direction: column">
+<span style="font-size: 26px; font-weight: 800; line-height: 1.1">{{st.value}}</span>
+<span style="font-size: 13px; color: #5B6478">{{st.label}}</span>
+</div>
+</div>
+</sc-for>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+
+<section aria-labelledby="list-title" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 20px 22px; border-radius: 22px; background: linear-gradient(180deg, #FFFFFF, #FBFCFF); border: 1px solid rgba(214,220,240,0.9); box-shadow: 0 14px 34px rgba(40,52,120,0.08)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px">
+<h2 id="list-title" style="margin: 0; font-size: 17px; font-weight: 700">{{listTitle}}</h2>
+<div role="group" aria-label="Filter tasks" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 13px; background: #F1F3FA; border: 1px solid #E3E7F2">
+<sc-for list="{{tabs}}" as="tb" hint-placeholder-count="4">
+<button type="button" onClick="{{tb.pick}}" aria-pressed="{{tb.pressed}}" style="min-height: 34px; padding: 0 12px; border-radius: 9px; border: none; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; background: {{tb.bg}}; color: {{tb.fg}}; box-shadow: {{tb.shadow}}">{{tb.label}} <span style="opacity: 0.7">{{tb.count}}</span></button>
+</sc-for>
+</div>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="7">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 4px; border-top: 1px solid #EEF0F6">
+<input type="checkbox" aria-label="Mark done: {{r.title}}" style="flex: none; width: 20px; height: 20px; margin: 0; accent-color: #2F5BEA">
+<span style="flex: none; min-width: 96px; text-align: center; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; background: {{r.tagBg}}; color: {{r.tagFg}}">{{r.tag}}</span>
+<div style="flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<span style="font-size: 14px; font-weight: 700">{{r.title}}</span>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; color: #5B6478">
+<span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 6px; background: {{r.srcBg}}; color: {{r.srcFg}}; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 600">{{r.source}}</span>{{r.detail}}</span>
+</div>
+<div style="flex: 0 1 190px; display: flex; align-items: center; gap: 10px; min-width: 0">
+<span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: {{r.avBg}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700">{{r.initials}}</span>
+<span style="font-size: 13px; font-weight: 600">{{r.patient}}</span>
+</div>
+<sc-if value="{{showAssignee}}" hint-placeholder-val="{{false}}">
+<span style="flex: 0 1 140px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #3B4560"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>{{r.assignee}}</span>
+</sc-if>
+<span style="flex: 0 0 92px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600; color: {{r.dueFg}}">{{r.due}}</span>
+<a href="{{r.href}}" style="flex: none; font-size: 13px; font-weight: 700; color: #2442A8; text-decoration: none">Open Record →</a>
+</div>
+</sc-for>
+<sc-if value="{{showMore}}" hint-placeholder-val="{{false}}">
+<button type="button" style="margin-top: 6px; min-height: 44px; border-radius: 12px; border: 1px dashed #C9D5FB; background: #F7F9FF; font-family: inherit; font-size: 13px; font-weight: 600; color: #2442A8; cursor: pointer">{{moreLabel}}</button>
+</sc-if>
+</section>
+
+<aside aria-labelledby="auto-title" style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 22px; border-radius: 26px; background: radial-gradient(420px 260px at 50% 30%, rgba(45,212,191,0.18), transparent 70%), linear-gradient(165deg, #0F3142, #0A1C2B); border: 1px solid rgba(94,234,212,0.14); color: #FFFFFF; box-shadow: 0 28px 70px rgba(8,30,45,0.35)">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(145deg, #2DD4BF, #0E9F8E); box-shadow: 0 0 24px rgba(45,212,191,0.5); display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"></path></svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 id="auto-title" style="margin: 0; font-size: 16px; font-weight: 700">Automatic follow-ups</h2>
+<span style="font-size: 12px; color: #A7C4CF">Out-of-range lab results create tasks</span>
+</div>
+</div>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.14em; color: #7FD8CB">LATEST · 25 NOV</span>
+
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 16px; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.35)">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #FCD34D">1 · LAB RESULT RECEIVED</span>
+<span style="font-size: 14px; font-weight: 700">Potassium 3.1 mmol/L</span>
+<span style="font-size: 12px; color: #C9D8DE">Sofia Reyes · below normal range (3.5–5.1)</span>
+</div>
+<div aria-hidden="true" style="align-self: center; width: 2px; height: 18px; background: linear-gradient(#FCD34D, #2DD4BF)"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 16px; background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.35)">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #5EEAD4">2 · TASK CREATED</span>
+<span style="font-size: 14px; font-weight: 700">Review low potassium result</span>
+<span style="font-size: 12px; color: #C9D8DE">Linked to the lab result on her record</span>
+</div>
+<div aria-hidden="true" style="align-self: center; width: 2px; height: 18px; background: linear-gradient(#2DD4BF, #8B7BFF)"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 16px; background: rgba(139,123,255,0.1); border: 1px solid rgba(139,123,255,0.4)">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #C4B5FD">3 · ASSIGNED</span>
+<span style="font-size: 14px; font-weight: 700">Demo Clinician</span>
+<span style="font-size: 12px; color: #C9D8DE">Due 27 Nov · 2 days after the result</span>
+</div>
+<p style="margin: 0; font-size: 12px; line-height: 1.55; color: #A7C4CF">No one has to spot the result by hand. Each task links back to the exact lab result that created it.</p>
+</aside>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"enum","options":["frontdesk","clinician","admin"],"default":"clinician"},"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'all' };
+  }
+  renderVals() {
+    const role = this.props.role ?? 'clinician';
+    const tab = (this.state && this.state.tab) || 'all';
+    const tags = {
+      overdue: { tag: 'OVERDUE', tagBg: '#FDECEC', tagFg: '#B42318', dueFg: '#B42318' },
+      today: { tag: 'DUE TODAY', tagBg: '#FFF1D6', tagFg: '#8A4B00', dueFg: '#8A4B00' },
+      upcoming: { tag: 'UPCOMING', tagBg: '#EAF0FF', tagFg: '#2442A8', dueFg: '#3B4560' }
+    };
+    const src = {
+      lab: { source: 'AUTO · LAB', srcBg: '#E3F7F3', srcFg: '#0F766E' },
+      staff: { source: 'STAFF', srcBg: '#F1F3FA', srcFg: '#3B4560' }
+    };
+    const av = { MH: 'linear-gradient(145deg, #7C6CFF, #3F51D8)', SR: 'linear-gradient(145deg, #F59E0B, #D97706)', DC: 'linear-gradient(145deg, #38BDF8, #0284C7)', GM: 'linear-gradient(145deg, #F472B6, #DB2777)', OF: 'linear-gradient(145deg, #34D399, #059669)', AR: 'linear-gradient(145deg, #A78BFA, #7C3AED)', DO: 'linear-gradient(145deg, #FB923C, #EA580C)', JM: 'linear-gradient(145deg, #94A3B8, #64748B)' };
+    const R = (k, s, title, detail, patient, initials, due, assignee) => Object.assign({ k, title, detail, patient, initials, due, assignee, avBg: av[initials], href: initials === 'MH' ? 'PatientPage.dc.html' : '#patient' }, tags[k], src[s]);
+    const clin = [
+      R('overdue', 'lab', 'Review high HbA1c result', 'HbA1c 7.9%, above range', 'Marcus Holloway', 'MH', '26 Nov', 'Demo Clinician'),
+      R('today', 'lab', 'Review low potassium result', 'Potassium 3.1 mmol/L, below range', 'Sofia Reyes', 'SR', 'Today', 'Demo Clinician'),
+      R('today', 'lab', 'Review high creatinine result', 'Creatinine 142 µmol/L, above range', 'David Chen', 'DC', 'Today', 'Demo Clinician'),
+      R('today', 'lab', 'Review low haemoglobin result', 'Haemoglobin 11.2 g/dL, below range', 'Grace Mensah', 'GM', 'Today', 'Demo Clinician'),
+      R('upcoming', 'lab', 'Review high LDL cholesterol result', 'LDL 4.6 mmol/L, above range', 'Omar Farouk', 'OF', '28 Nov', 'Demo Clinician'),
+      R('upcoming', 'lab', 'Review high TSH result', 'TSH 5.8 mIU/L, above range', 'Aisha Rahman', 'AR', '30 Nov', 'Demo Clinician'),
+      R('upcoming', 'lab', 'Review high fasting glucose result', 'Glucose 7.8 mmol/L, above range', 'Marcus Holloway', 'MH', '2 Dec', 'Demo Clinician')
+    ];
+    const fd = [
+      R('overdue', 'staff', 'Call to book a follow-up visit', 'Requested after a lab review', 'Marcus Holloway', 'MH', '26 Nov', 'Demo Front Desk'),
+      R('today', 'staff', 'Call to book a follow-up visit', 'Requested after a lab review', 'Aisha Rahman', 'AR', 'Today', 'Demo Front Desk'),
+      R('today', 'staff', 'Ask for an updated insurance card', 'Card on file expired 31 Oct', 'Daniel Okafor', 'DO', 'Today', 'Demo Front Desk'),
+      R('upcoming', 'staff', 'Get missing details from Northgate Clinic', 'Referral letter has no date of birth', 'Joseph Moyo', 'JM', '28 Nov', 'Demo Front Desk'),
+      R('upcoming', 'staff', 'Call to book a follow-up visit', 'Requested after a lab review', 'Sofia Reyes', 'SR', '1 Dec', 'Demo Front Desk')
+    ];
+    const order = { overdue: 0, today: 1, upcoming: 2 };
+    const pool = role === 'admin' ? clin.concat(fd).sort((a, b) => order[a.k] - order[b.k]) : (role === 'frontdesk' ? fd : clin);
+    const cnt = (k) => pool.filter((r) => r.k === k).length;
+    const filtered = tab === 'all' ? pool : pool.filter((r) => r.k === tab);
+    const limit = role === 'admin' ? 8 : 99;
+    const rows = filtered.slice(0, limit);
+    const tabDefs = [['all', 'All', pool.length], ['overdue', 'Overdue', cnt('overdue')], ['today', 'Due today', cnt('today')], ['upcoming', 'Upcoming', cnt('upcoming')]];
+    const tabs = tabDefs.map(([k, label, count]) => ({
+      label, count: String(count),
+      pressed: k === tab ? 'true' : 'false',
+      bg: k === tab ? '#FFFFFF' : 'transparent',
+      fg: k === tab ? '#2442A8' : '#5B6478',
+      shadow: k === tab ? '0 2px 8px rgba(40,52,120,0.12)' : 'none',
+      pick: () => this.setState({ tab: k })
+    }));
+    const done = role === 'admin' ? '9' : (role === 'frontdesk' ? '3' : '6');
+    const me = role === 'admin' ? { short: 'AD', name: 'Demo Admin', role: 'Admin' } : (role === 'frontdesk' ? { short: 'FD', name: 'Demo Front Desk', role: 'Front Desk' } : { short: 'CL', name: 'Demo Clinician', role: 'Clinician' });
+    return {
+      me,
+      showIntake: role !== 'clinician',
+      showAdmin: role === 'admin',
+      showAssignee: role === 'admin',
+      pageTitle: role === 'admin' ? 'All tasks' : 'My tasks',
+      listTitle: role === 'admin' ? 'Everyone’s tasks, most urgent first' : 'Assigned to you, most urgent first',
+      counts: { open: String(pool.length) },
+      stats: [
+        { value: String(pool.length), label: 'Open tasks', c: '#4C72F0', glow: 'rgba(76,114,240,0.5)' },
+        { value: String(cnt('overdue')), label: 'Overdue', c: '#E5484D', glow: 'rgba(229,72,77,0.45)' },
+        { value: String(cnt('today')), label: 'Due today', c: '#F59E0B', glow: 'rgba(245,158,11,0.45)' },
+        { value: done, label: 'Done this week', c: '#22C55E', glow: 'rgba(34,197,94,0.45)' }
+      ],
+      tabs, rows,
+      showMore: filtered.length > rows.length,
+      moreLabel: 'Show ' + (filtered.length - rows.length) + ' more'
+    };
+  }
+}
+</script>
+</body>
+</html>
