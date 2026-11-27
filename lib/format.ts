@@ -71,3 +71,37 @@ export function timeAgo(iso: string, now = Date.now()): string {
   const days = Math.round(hours / 24);
   return `${days} ${days === 1 ? "day" : "days"} ago`;
 }
+
+/** "14 March 1979", for editable date fields on the Intake screen. */
+export function formatLongDate(date: string): string {
+  const [y, m, d] = parts(date);
+  return `${d} ${MONTHS_LONG[m]} ${y}`;
+}
+
+/** Real calendar date check, e.g. rejects 31 February. */
+function isoIfValid(y: number, m: number, d: number): string | null {
+  if (y < 1900 || y > 2100 || m < 1 || m > 12 || d < 1) return null;
+  const date = new Date(Date.UTC(y, m - 1, d));
+  if (date.getUTCMonth() !== m - 1 || date.getUTCDate() !== d) return null;
+  return date.toISOString().slice(0, 10);
+}
+
+/**
+ * A date typed by staff or read off a document, as "YYYY-MM-DD", or null if it
+ * can't be read. Accepts "1979-03-14", "14/03/1979" or "14 / 03 / 1979" (day first,
+ * as the clinic's forms are written), and "14 March 1979" or "14 Mar 1979".
+ */
+export function parseDocDate(text: string): string | null {
+  const t = text.trim().replace(/\s+/g, " ");
+  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(t);
+  if (m) return isoIfValid(+m[1], +m[2], +m[3]);
+  m = /^(\d{1,2}) ?[/.-] ?(\d{1,2}) ?[/.-] ?(\d{4})$/.exec(t);
+  if (m) return isoIfValid(+m[3], +m[2], +m[1]);
+  m = /^(\d{1,2}) ([A-Za-z]+)\.?,? (\d{4})$/.exec(t);
+  if (m) {
+    const name = m[2].toLowerCase();
+    const month = MONTHS_LONG.findIndex((l) => l.toLowerCase() === name || l.slice(0, 3).toLowerCase() === name);
+    return month < 0 ? null : isoIfValid(+m[3], month + 1, +m[1]);
+  }
+  return null;
+}

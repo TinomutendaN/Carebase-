@@ -118,3 +118,15 @@ body {
     box-shadow: none;
   }
 }
+
+/* Intake: the teal beam that sweeps a document while the AI reads it. */
+@keyframes intake-scan {
+  0% { top: -8%; }
+  100% { top: 100%; }
+}
+.intake-beam {
+  animation: intake-scan 1.8s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .intake-beam { animation: none; top: 45%; }
+}

@@ -72,7 +72,7 @@ async function PatientRecord({ params }: { params: PageProps<"/patients/[id]">["
         <AllergiesCard allergies={allergies} />
         <ConditionsCard conditions={conditions} />
       </div>
-      <Timeline entries={timeline} labsHidden={!showLabs} />
+      <Timeline entries={timeline} labsHidden={!showLabs} canViewDocuments={can(session.role, "intake")} />
     </>
   );
 }

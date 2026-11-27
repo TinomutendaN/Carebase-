@@ -135,6 +135,7 @@ export async function getWearables(patientId: string): Promise<Record<WearableKi
 export type TimelineEntry =
   | { type: "visit"; id: string; date: string; title: string; detail: string | null }
   | { type: "medication"; id: string; date: string; title: string; detail: string | null; event: "started" | "stopped" }
+  | { type: "document"; id: string; documentId: string; date: string; title: string; detail: string | null }
   | {
       type: "lab";
       id: string;
@@ -150,8 +151,9 @@ export type TimelineEntry =
 export const TIMELINE_LIMIT = 300;
 
 /**
- * Visits, medication starts and stops, and lab results, newest first. Within a day:
- * visits, then the main labs in `labCodes` order, then other labs, then medications.
+ * Visits, medication starts and stops, lab results, and approved intake documents
+ * (Step 6), newest first. Within a day: visits, then the main labs in `labCodes`
+ * order, then other labs, then medications, then documents.
  * Lab rows: every result for `labCodes` plus any out-of-range result.
  * With `includeLabs` false (Front Desk) the database returns no lab rows at all.
  */
@@ -163,25 +165,34 @@ export async function getTimeline(
     SELECT * FROM (
       SELECT 'visit' AS type, 'visit-' || id AS id, visited_at AS sort_at, visited_at::date::text AS date,
              kind AS title, coalesce(reason, 'With ' || provider_name) AS detail,
-             NULL::text AS code, NULL::float8 AS value, NULL::text AS unit, NULL::float8 AS low, NULL::float8 AS high, NULL::text AS event
+             NULL::text AS code, NULL::float8 AS value, NULL::text AS unit, NULL::float8 AS low, NULL::float8 AS high, NULL::text AS event, NULL::text AS document_id
       FROM visits WHERE patient_id = ${patientId}
       UNION ALL
       SELECT 'medication', 'med-start-' || id, started_on::timestamptz, started_on::text,
-             name, dose, NULL, NULL, NULL, NULL, NULL, 'started'
+             name, dose, NULL, NULL, NULL, NULL, NULL, 'started', NULL
       FROM medications WHERE patient_id = ${patientId} AND started_on IS NOT NULL
       UNION ALL
       SELECT 'medication', 'med-stop-' || id, stopped_on::timestamptz, stopped_on::text,
-             name, dose, NULL, NULL, NULL, NULL, NULL, 'stopped'
+             name, dose, NULL, NULL, NULL, NULL, NULL, 'stopped', NULL
       FROM medications WHERE patient_id = ${patientId} AND stopped_on IS NOT NULL
       UNION ALL
+      SELECT 'document', 'doc-' || id, reviewed_at, reviewed_at::date::text,
+             CASE kind WHEN 'referral_letter' THEN 'Referral letter' ELSE 'Intake form' END,
+             nullif(concat_ws(' · ',
+               nullif(extracted->'fields'->>'practice', ''),
+               nullif(CASE kind WHEN 'referral_letter' THEN extracted->'fields'->>'reasonForReferral'
+                                ELSE extracted->'fields'->>'reasonForVisit' END, '')), ''),
+             NULL, NULL, NULL, NULL, NULL, NULL, id::text
+      FROM intake_documents WHERE patient_id = ${patientId} AND status = 'approved'
+      UNION ALL
       SELECT 'lab', 'lab-' || id, taken_at, taken_at::date::text,
-             name, NULL, code, value::float8, unit, normal_low::float8, normal_high::float8, NULL
+             name, NULL, code, value::float8, unit, normal_low::float8, normal_high::float8, NULL, NULL
       FROM lab_results
       WHERE ${includeLabs}::boolean AND patient_id = ${patientId}
         AND (code = ANY(${labCodes}::text[]) OR value > normal_high OR value < normal_low)
     ) t
     ORDER BY date DESC,
-             CASE type WHEN 'visit' THEN 0 WHEN 'lab' THEN 1 ELSE 2 END,
+             CASE type WHEN 'visit' THEN 0 WHEN 'lab' THEN 1 WHEN 'medication' THEN 2 ELSE 3 END,
              array_position(${labCodes}::text[], code) NULLS LAST,
              sort_at DESC, title
     LIMIT ${TIMELINE_LIMIT}
@@ -200,6 +211,9 @@ export async function getTimeline(
         low: r.low == null ? null : Number(r.low),
         high: r.high == null ? null : Number(r.high),
       };
+    }
+    if (r.type === "document") {
+      return { type: "document", id: r.id, documentId: r.document_id, date: r.date, title: r.title, detail: r.detail };
     }
     if (r.type === "medication") {
       return { type: "medication", id: r.id, date: r.date, title: r.title, detail: r.detail, event: r.event };

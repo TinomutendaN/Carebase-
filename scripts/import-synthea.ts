@@ -12,6 +12,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Pool, type PoolClient } from "@neondatabase/serverless";
 import { labRange, roundLabValue } from "../lib/lab-ranges";
+import { pickMrn } from "../lib/mrn";
 
 const FHIR_DIR = join(process.cwd(), ".synthea", "output", "fhir");
 /** Must match -r in the synthea:generate script. */
@@ -119,16 +120,6 @@ function makeShifter(offsetDays: number) {
     /** Uses the calendar date as Synthea wrote it, then moves it. */
     date: (s: string) => new Date(Date.parse(s.slice(0, 10)) + offsetDays * DAY_MS).toISOString().slice(0, 10),
   };
-}
-
-/** FNV-1a, for a stable starting point when assigning MRNs. */
-function fnv1a(s: string): number {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  return h >>> 0;
 }
 
 function isDiagnosis(c: Coding, skipped: Map<string, number>): boolean {
@@ -425,10 +416,9 @@ async function assignMrns(pool: Pool, syntheaIds: string[]): Promise<Map<string,
       mrns.set(id, known);
       continue;
     }
-    let n = 10000 + (fnv1a(id) % 90000);
-    while (taken.has(String(n))) n = n === 99999 ? 10000 : n + 1;
-    taken.add(String(n));
-    mrns.set(id, String(n));
+    const mrn = pickMrn(id, taken);
+    taken.add(mrn);
+    mrns.set(id, mrn);
   }
   return mrns;
 }

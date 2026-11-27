@@ -23,7 +23,8 @@ export function PatientHeader({ patient }: { patient: PatientSummary }) {
           <div className="flex flex-wrap gap-2">
             <Chip label="MRN" value={patient.mrn} />
             <Chip label="AGE" value={String(patient.age)} />
-            {patient.sex && <Chip label="SEX" value={patient.sex} />}
+            {/* Patients added through Intake have no sex recorded. */}
+            <Chip label="SEX" value={patient.sex ?? "—"} />
           </div>
         </div>
       </div>

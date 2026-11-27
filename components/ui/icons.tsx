@@ -215,3 +215,26 @@ export function MoreIcon({ size = 18, className }: IconProps) {
     </svg>
   );
 }
+
+export const UploadIcon = (p: IconProps) => (
+  <Icon strokeWidth={2.2} {...p}>
+    <path d="M12 16V4" />
+    <path d="M6 10l6-6 6 6" />
+    <path d="M4 20h16" />
+  </Icon>
+);
+
+export const ShieldCheckIcon = (p: IconProps) => (
+  <Icon strokeWidth={2} {...p}>
+    <path d="M12 3l8 3v6c0 4.5-3.4 8.4-8 9-4.6-.6-8-4.5-8-9V6z" />
+    <path d="M9 12l2 2 4-4" />
+  </Icon>
+);
+
+export const WarningIcon = (p: IconProps) => (
+  <Icon strokeWidth={2} {...p}>
+    <path d="M12 3L2 20h20z" />
+    <path d="M12 10v4" />
+    <path d="M12 17h.01" />
+  </Icon>
+);

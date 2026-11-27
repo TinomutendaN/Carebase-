@@ -12,9 +12,20 @@ const TAGS = {
   visit: { label: "Visit", className: "bg-[#EAF0FF] text-[#2442A8]" },
   lab: { label: "Lab", className: "bg-[#FFF1D6] text-[#8A4B00]" },
   medication: { label: "Medication", className: "bg-[#F0EAFE] text-[#5B3BC4]" },
+  document: { label: "Document", className: "bg-[#E3F6EC] text-[#166534]" },
 } as const;
 
-type Row = { id: string; date: string; type: keyof typeof TAGS; title: string; detail: string | null; value?: string; valueClass?: string };
+type Row = {
+  id: string;
+  date: string;
+  type: keyof typeof TAGS;
+  title: string;
+  detail: string | null;
+  value?: string;
+  valueClass?: string;
+  /** Intake documents: where to open the uploaded file. */
+  href?: string;
+};
 
 function toRow(e: TimelineEntry): Row {
   if (e.type === "lab") {
@@ -29,6 +40,9 @@ function toRow(e: TimelineEntry): Row {
       valueClass: status === "above" ? "text-[#B45309]" : status === "below" ? "text-[#B42318]" : "text-ink",
     };
   }
+  if (e.type === "document") {
+    return { id: e.id, date: e.date, type: "document", title: e.title, detail: e.detail, href: `/api/intake/${e.documentId}/file` };
+  }
   if (e.type === "medication") {
     const detail = e.event === "stopped" ? "Stopped" : e.detail ? `${capitalize(e.detail)}, started` : "Started";
     return { id: e.id, date: e.date, type: "medication", title: e.title, detail };
@@ -40,7 +54,12 @@ function toRow(e: TimelineEntry): Row {
  * Visits, labs and medications, newest first. The first 10 show; the rest
  * (already loaded with the page) appear 10 at a time.
  */
-export function Timeline({ entries, labsHidden }: { entries: TimelineEntry[]; labsHidden: boolean }) {
+export function Timeline({ entries, labsHidden, canViewDocuments }: {
+  entries: TimelineEntry[];
+  labsHidden: boolean;
+  /** Roles with intake access get a link to each attached document. */
+  canViewDocuments: boolean;
+}) {
   const [shown, setShown] = useState(PAGE);
   const rows = entries.map(toRow);
   const left = rows.length - shown;
@@ -75,6 +94,11 @@ export function Timeline({ entries, labsHidden }: { entries: TimelineEntry[]; la
               {r.detail && <span className="text-xs text-secondary">{r.detail}</span>}
             </span>
             {r.value && <span className={cx("font-mono text-[13px] font-semibold", r.valueClass)}>{r.value}</span>}
+            {r.href && canViewDocuments && (
+              <a href={r.href} target="_blank" rel="noopener" className="text-[13px] font-semibold text-primary-ink no-underline hover:underline">
+                View document
+              </a>
+            )}
           </li>
         ))}
       </ol>

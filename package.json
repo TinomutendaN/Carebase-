@@ -11,7 +11,8 @@
     "synthea:generate": "java -jar .synthea/synthea-with-dependencies.jar -p 200 -s 4242 -cs 4242 -r 20261127 -a 30-85 --exporter.baseDirectory=.synthea/output --exporter.years_of_history=5 --exporter.fhir.export=true --exporter.hospital.fhir.export=false --exporter.practitioner.fhir.export=false --exporter.fhir.bulk_data=false --generate.only_alive_patients=true",
     "db:import": "tsx --env-file=.env.local scripts/import-synthea.ts",
     "db:wearables": "tsx --env-file=.env.local scripts/generate-wearables.ts",
-    "db:check": "tsx --env-file=.env.local scripts/check-data.ts"
+    "db:check": "tsx --env-file=.env.local scripts/check-data.ts",
+    "samples": "tsx --env-file=.env.local scripts/make-samples.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.110",
