@@ -72,7 +72,7 @@ function IntakeSkeleton() {
     <div aria-busy="true" aria-label="Loading intake" className="box-border flex flex-wrap gap-5 px-8 pt-6 pb-9 max-sm:px-4">
       <div className={`${block} h-[620px] flex-[1_1_280px]`} />
       <div className="h-[620px] flex-[2_1_380px] rounded-[26px] bg-linear-165 from-teal-panel to-teal-panel-deep opacity-90" />
-      <div className={`${block} h-[560px] basis-full`} />
+      <div className={`${block} h-[620px] flex-[1.4_1_340px]`} />
     </div>
   );
 }

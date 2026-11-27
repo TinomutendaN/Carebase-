@@ -170,7 +170,7 @@ export function ExtractedDetails({ view, today, onFocusField, onSaved, onReviewe
   return (
     <section
       aria-labelledby="fields-title"
-      className="box-border flex min-w-0 basis-full flex-col gap-3.5 rounded-[22px] border border-hairline/90 bg-linear-to-b from-surface to-surface-soft p-5 shadow-card"
+      className="box-border flex min-w-0 flex-[1.4_1_340px] flex-col gap-3.5 rounded-[22px] border border-hairline/90 bg-linear-to-b from-surface to-surface-soft p-5 shadow-card"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">

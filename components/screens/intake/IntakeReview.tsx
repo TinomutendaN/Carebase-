@@ -88,7 +88,7 @@ export function IntakeReview({ queue, approved, view, today }: {
           <section
             aria-label="Extracted details"
             aria-busy="true"
-            className="box-border flex min-h-[240px] min-w-0 basis-full items-center justify-center rounded-[22px] border border-hairline/90 bg-linear-to-b from-surface to-surface-soft p-5 text-sm text-secondary shadow-card"
+            className="box-border flex min-h-[240px] min-w-0 flex-[1.4_1_340px] items-center justify-center rounded-[22px] border border-hairline/90 bg-linear-to-b from-surface to-surface-soft p-5 text-sm text-secondary shadow-card"
           >
             Reading document… the fields appear here when the AI is done.
           </section>
