@@ -12,14 +12,15 @@ import { dateTicks, formatDay, formatValue, linearScale, niceDomain, timeDomain,
 export type LabPoint = { date: string; value: number; id?: string };
 export type RangeStatus = "in" | "above" | "below";
 
-// Plot area inside the 640 × 260 viewBox (from designs/source/02-dashboard.html).
-const W = 640;
-const H = 260;
+// Plot area inside the default 640 × 260 viewBox (from designs/source/02-dashboard.html).
+// With a measured `width`/`height`, one viewBox unit is one CSS pixel, so text stays 11px.
+const DEFAULT_W = 640;
+const DEFAULT_H = 260;
 const LEFT = 48;
-const RIGHT = 616;
+const RIGHT_GAP = 24;
 const TOP = 20;
-const BOTTOM = 220;
-const AXIS_Y = 248;
+const BOTTOM_GAP = 40;
+const AXIS_GAP = 12;
 
 const DOT_COLOR: Record<RangeStatus, string> = { in: "#2DD4BF", above: "#FBBF24", below: "#F87171" };
 const STATUS_TEXT: Record<RangeStatus, { label: string; className: string; border: string }> = {
@@ -46,10 +47,18 @@ type Props = {
   label?: string;
   /** Right-hand caption, e.g. "Normal range 4.0–5.6%". */
   rangeLabel?: string;
+  /** The chart's real size in CSS pixels (see ResponsiveLabTrendChart). Defaults to a 640 × 260 viewBox that scales. */
+  width?: number;
+  height?: number;
   className?: string;
 };
 
-export function LabTrendChart({ points, low, high, unit, name, label, rangeLabel, className }: Props) {
+export function LabTrendChart({ points, low, high, unit, name, label, rangeLabel, width, height, className }: Props) {
+  const W = width ?? DEFAULT_W;
+  const H = height ?? DEFAULT_H;
+  const RIGHT = W - RIGHT_GAP;
+  const BOTTOM = H - BOTTOM_GAP;
+  const AXIS_Y = H - AXIS_GAP;
   const gradientId = `lab-area-${useId().replace(/:/g, "")}`;
   const sorted = [...points].sort((a, b) => toTime(a.date) - toTime(b.date));
 
@@ -64,7 +73,7 @@ export function LabTrendChart({ points, low, high, unit, name, label, rangeLabel
     return (
       <div className={cx("flex flex-col gap-3", className)}>
         {header}
-        <div className="flex aspect-640/260 items-center justify-center rounded-2xl border border-dashed border-white/12 text-sm text-teal-muted">
+        <div style={{ aspectRatio: `${W} / ${H}` }} className="flex items-center justify-center rounded-2xl border border-dashed border-white/12 text-sm text-teal-muted">
           No {name} results yet
         </div>
       </div>
@@ -115,7 +124,7 @@ export function LabTrendChart({ points, low, high, unit, name, label, rangeLabel
 
   // The latest card sits left of the last point (as in the designs); near the left edge it flips right.
   // With many results it would cover the recent dots, so it drops below or above the line instead.
-  const flip = latest.x < 260;
+  const flip = latest.x < W * 0.4;
   const dense = n > 8;
   const below = dense && latest.y < (TOP + BOTTOM) / 2;
   const topPct = dense ? (latest.y / H) * 100 : Math.min(Math.max((latest.y / H) * 100, 22), 78);
@@ -128,7 +137,7 @@ export function LabTrendChart({ points, low, high, unit, name, label, rangeLabel
   return (
     <div className={cx("flex flex-col gap-3", className)}>
       {header}
-      <div className="relative aspect-640/260 w-full">
+      <div className="relative w-full" style={{ aspectRatio: `${W} / ${H}` }}>
         <svg role="img" aria-label={aria} viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" className="overflow-visible">
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">

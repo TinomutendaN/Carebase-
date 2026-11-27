@@ -176,7 +176,7 @@ Build in this order. Each step lists what to build and the deliverables that sho
 
 **Build:**
 - Sign in with the role switcher
-- `middleware.ts` (signed-out visitors go to Sign in)
+- `proxy.ts` (signed-out visitors go to Sign in)
 - The search API with timing, the recently viewed list and the results dropdown
 - The Patient page: header, lab trends, wearables, allergies, conditions and timeline
 - Labs hidden for Front Desk
@@ -185,7 +185,7 @@ Build in this order. Each step lists what to build and the deliverables that sho
 **Deliverables:**
 - Signing in as each role shows the right sidebar
 - Searching shows the time in ms
-- Marcus Holloway's page matches the canvas
+- Bert Hammes's page matches the canvas
 - Front Desk can't see labs, in either the page or the API
 - Views appear in the audit log
 

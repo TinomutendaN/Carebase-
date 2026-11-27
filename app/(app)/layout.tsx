@@ -23,7 +23,7 @@ export default function SignedInLayout({ children }: { children: ReactNode }) {
 
 async function SessionSidebar() {
   const session = await getSession();
-  // Minimal guard until middleware.ts arrives in Step 5.
+  // proxy.ts only checks the cookie exists; this checks it names a real account.
   if (!session) redirect("/");
 
   const counts = await getSidebarCounts(session.accountId);

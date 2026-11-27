@@ -185,6 +185,27 @@ export const GlobeIcon = (p: IconProps) => (
 );
 
 /** Three-dot menu. The one filled glyph in the designs. */
+export const FileCheckIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+    <path d="M14 3v6h6" />
+    <path d="M9 15l2 2 4-4" />
+  </Icon>
+);
+
+export const ChatIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </Icon>
+);
+
+export const CheckCircleIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M8 12l3 3 5-6" />
+  </Icon>
+);
+
 export function MoreIcon({ size = 18, className }: IconProps) {
   return (
     <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>

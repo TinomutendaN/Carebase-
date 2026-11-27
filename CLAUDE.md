@@ -61,6 +61,7 @@ carebase/
 │       ├── search/route.ts       # Patient search, returns timing in ms
 │       ├── intake/route.ts       # Upload and extract
 │       ├── intake/[id]/route.ts  # Approve or reject
+│       ├── patients/[id]/labs/route.ts  # One lab's results (refuses Front Desk)
 │       ├── assistant/route.ts    # Streaming chat with tools
 │       ├── tasks/route.ts
 │       ├── export/route.ts       # De-identified export
@@ -99,7 +100,7 @@ carebase/
 ├── public/
 │   └── samples/                  # The 8 intake forms and referral letters
 ├── designs/                      # Screenshots and HTML source of every screen
-├── middleware.ts                 # Sends signed-out visitors to Sign in
+├── proxy.ts                      # Sends signed-out visitors to Sign in (Next 16 name for middleware)
 └── CLAUDE.md
 ```
 

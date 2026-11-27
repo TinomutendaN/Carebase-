@@ -1,13 +1,20 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ACCOUNT_GRADIENT, Avatar } from "@/components/ui/Avatar";
+import { cx } from "@/lib/cx";
 import { BellIcon, ChevronDownIcon, SearchIcon } from "@/components/ui/icons";
 
 /**
  * The frosted top bar: "CAREBASE › SECTION" breadcrumb and the page title.
  * The right side differs per screen in the designs, so it's a slot.
  */
-export function TopBar({ section, title, children }: { section: string; title: ReactNode; children?: ReactNode }) {
+export function TopBar({ section, title, children, actionsClassName }: {
+  section: string;
+  title: ReactNode;
+  children?: ReactNode;
+  /** Extra classes for the right-hand slot, e.g. to let a wide search field grow. */
+  actionsClassName?: string;
+}) {
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-hairline/80 bg-white/70 px-8 py-[18px] backdrop-blur-[14px]">
       <div className="flex flex-col gap-1">
@@ -16,7 +23,7 @@ export function TopBar({ section, title, children }: { section: string; title: R
         </span>
         <h1 className="m-0 text-xl font-bold">{title}</h1>
       </div>
-      {children && <div className="flex flex-wrap items-center gap-3">{children}</div>}
+      {children && <div className={cx("flex flex-wrap items-center gap-3", actionsClassName)}>{children}</div>}
     </header>
   );
 }

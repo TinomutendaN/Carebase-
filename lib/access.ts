@@ -13,6 +13,13 @@ export const ROLE_LABELS: Record<Role, string> = {
   admin: "Admin",
 };
 
+/** What each role can see, for the Sign in role switcher. */
+export const ROLE_SUMMARIES: Record<Role, string> = {
+  front_desk: "Intake, patient records without labs, and your tasks",
+  clinician: "Patient records with labs, the assistant, and your tasks",
+  admin: "Everything, plus the audit log, roles, and de-identified export",
+};
+
 export const AREAS = ["intake", "patient_records", "lab_results", "assistant", "tasks", "audit_export"] as const;
 export type Area = (typeof AREAS)[number];
 
