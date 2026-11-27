@@ -85,7 +85,7 @@ carebase/
 │   └── deidentify.ts             # Remove names, year-only births, date shift
 ├── db/
 │   ├── schema.sql
-│   └── seed.sql                  # Demo accounts, sample tasks
+│   └── seed.sql                  # Sample tasks (demo accounts are seeded by apply-schema)
 ├── scripts/
 │   ├── import-synthea.ts         # FHIR files → Postgres (runs locally once)
 │   ├── generate-wearables.ts

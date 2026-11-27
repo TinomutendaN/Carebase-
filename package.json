@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:schema": "tsx --env-file=.env.local scripts/apply-schema.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.110",
