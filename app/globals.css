@@ -1,23 +1,79 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens from CLAUDE.md and designs/source/*.html. Set once here and
+ * used through Tailwind utilities (bg-*, text-*, shadow-*) everywhere.
+ */
 @theme inline {
   --font-sans: var(--font-jakarta), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
+  /* Canvas and surfaces */
   --color-canvas: #edf0fa;
+  --color-surface: #ffffff;
+  --color-surface-soft: #fbfcff;
+  --color-surface-muted: #fafbfe;
   --color-hairline: #d6dcf0;
+  --color-field-border: #e1e6f3;
+  --color-divider: #eef0f6;
+  --color-tab-track: #f1f3fa;
+
+  /* Text */
   --color-ink: #0f172a;
   --color-secondary: #5b6478;
   --color-label: #6b7287;
+  --color-nav-text: #3b4560;
+
+  /* Primary blue */
   --color-primary: #4c72f0;
   --color-primary-deep: #2847c4;
+  --color-primary-ink: #2442a8;
+  --color-primary-soft: #eef2ff;
+  --color-primary-line: #c9d5fb;
+  --color-badge-blue: #2f5bea;
+
+  /* Dark teal panel */
+  --color-teal-panel: #0f3142;
+  --color-teal-panel-deep: #0a1c2b;
   --color-teal: #2dd4bf;
   --color-teal-deep: #0e9f8e;
+  --color-mint: #5eead4;
+  --color-mint-label: #7fd8cb;
+  --color-teal-muted: #a7c4cf;
+  --color-chart-text: #7e9aa6;
+  --color-teal-on: #04211d;
+
+  /* Indigo panel */
+  --color-indigo-panel: #25216a;
+  --color-indigo-panel-deep: #15163f;
+  --color-violet: #7c5cff;
+  --color-lavender: #c3c2e6;
+
+  /* AI accent */
+  --color-ai: #8b7bff;
+  --color-ai-deep: #5b45e0;
+
+  /* Status */
   --color-amber: #fbbf24;
+  --color-amber-soft: #fcd34d;
   --color-red: #e5484d;
+  --color-red-soft: #f87171;
   --color-green: #22c55e;
+
+  /* Banner */
   --color-banner: #fff4d6;
   --color-banner-text: #7a4b00;
+
+  /* Light */
+  --shadow-card: 0 1px 2px rgba(40, 52, 120, 0.05), 0 14px 34px rgba(40, 52, 120, 0.08);
+  --shadow-field: 0 2px 8px rgba(40, 52, 120, 0.05);
+  --shadow-tab: 0 2px 8px rgba(40, 52, 120, 0.12);
+  --shadow-panel-teal: 0 28px 70px rgba(8, 30, 45, 0.4);
+  --shadow-panel-indigo: 0 24px 60px rgba(30, 26, 90, 0.35);
+  --shadow-logo: 0 6px 14px rgba(48, 86, 211, 0.35);
+  --shadow-button: 0 8px 20px rgba(47, 85, 224, 0.35);
+  --shadow-glow-teal: 0 0 24px rgba(45, 212, 191, 0.5);
+  --shadow-nav: 8px 0 30px rgba(40, 52, 120, 0.05);
 }
 
 body {
@@ -29,4 +85,36 @@ body {
   background-attachment: fixed;
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/*
+ * Keyboard focus: a soft blue ring for buttons, pills, links and inputs.
+ * Only shown for keyboard focus (:focus-visible), never on mouse clicks.
+ * Inside dark panels (.on-dark) the ring is lighter so it stays visible.
+ * [data-focus-preview] shows the ring without focus, for /dev/components only.
+ */
+@layer base {
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible,
+  [data-focus-preview] {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 5px rgba(76, 114, 240, 0.22);
+  }
+
+  :where(.on-dark) :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible,
+  :where(.on-dark) [data-focus-preview] {
+    outline-color: #93b4ff;
+    box-shadow: 0 0 0 5px rgba(147, 180, 255, 0.25);
+  }
+
+  /* A search field shows the ring on its frame, not on the bare input. */
+  .focus-frame:focus-within {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 5px rgba(76, 114, 240, 0.22);
+  }
+  .focus-frame input:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
 }

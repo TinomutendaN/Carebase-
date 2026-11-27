@@ -51,6 +51,7 @@ carebase/
 │   ├── (app)/                    # Everything behind sign-in
 │   │   ├── layout.tsx            # Sidebar, top bar, synthetic-data banner
 │   │   ├── dashboard/page.tsx
+│   │   ├── patients/page.tsx     # Patient search and recently viewed
 │   │   ├── patients/[id]/page.tsx
 │   │   ├── intake/page.tsx
 │   │   ├── tasks/page.tsx
