@@ -150,7 +150,8 @@ export type TimelineEntry =
 export const TIMELINE_LIMIT = 300;
 
 /**
- * Visits, medication starts and stops, and lab results, newest first.
+ * Visits, medication starts and stops, and lab results, newest first. Within a day:
+ * visits, then the main labs in `labCodes` order, then other labs, then medications.
  * Lab rows: every result for `labCodes` plus any out-of-range result.
  * With `includeLabs` false (Front Desk) the database returns no lab rows at all.
  */
@@ -179,7 +180,10 @@ export async function getTimeline(
       WHERE ${includeLabs}::boolean AND patient_id = ${patientId}
         AND (code = ANY(${labCodes}::text[]) OR value > normal_high OR value < normal_low)
     ) t
-    ORDER BY date DESC, CASE type WHEN 'visit' THEN 0 WHEN 'lab' THEN 1 ELSE 2 END, sort_at DESC, title
+    ORDER BY date DESC,
+             CASE type WHEN 'visit' THEN 0 WHEN 'lab' THEN 1 ELSE 2 END,
+             array_position(${labCodes}::text[], code) NULLS LAST,
+             sort_at DESC, title
     LIMIT ${TIMELINE_LIMIT}
   `;
 

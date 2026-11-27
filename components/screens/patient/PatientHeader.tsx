@@ -1,3 +1,4 @@
+import { gradientFor } from "@/components/ui/Avatar";
 import type { PatientSummary } from "@/lib/db/queries/patients";
 import { formatDate } from "@/lib/format";
 
@@ -11,7 +12,9 @@ export function PatientHeader({ patient }: { patient: PatientSummary }) {
       <div className="flex items-center gap-[18px]">
         <span
           aria-hidden="true"
-          className="flex size-[72px] flex-none items-center justify-center rounded-[22px] bg-linear-145 from-[#7C6CFF] to-[#3F51D8] text-2xl font-extrabold text-white shadow-[0_10px_24px_rgba(76,90,230,0.35)]"
+          // Same initials-based colour as the search dropdown and recently viewed list.
+          style={{ background: gradientFor(patient.initials) }}
+          className="flex size-[72px] flex-none items-center justify-center rounded-[22px] text-2xl font-extrabold text-white shadow-[0_10px_24px_rgba(40,52,120,0.22)]"
         >
           {patient.initials}
         </span>
