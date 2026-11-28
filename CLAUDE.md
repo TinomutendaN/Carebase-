@@ -65,6 +65,8 @@ carebase/
 │       ├── assistant/route.ts    # Streaming chat with tools
 │       ├── tasks/route.ts
 │       ├── export/route.ts       # De-identified export
+│       ├── audit/route.ts        # Audit log viewer (one day, paged)
+│       ├── roles/route.ts        # Change demo accounts' roles
 │       └── tests/route.ts        # Latest test results
 ├── components/
 │   ├── ui/                       # Card, Pill, Tag, Button, IconChip, Avatar

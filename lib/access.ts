@@ -68,3 +68,18 @@ export function canCompleteTask(role: Role, accountId: number, assigneeId: numbe
 export function isRole(value: unknown): value is Role {
   return typeof value === "string" && (ROLES as readonly string[]).includes(value);
 }
+
+/**
+ * The roles that would have no account after these changes. Every role needs at
+ * least one demo account, so demoting the last Admin (or any change that empties a
+ * role) is refused. Swapping two accounts' roles is fine.
+ */
+export function rolesLeftEmpty(
+  accounts: { email: string; role: Role }[],
+  changes: { email: string; role: Role }[],
+): Role[] {
+  const next = new Map(accounts.map((a) => [a.email, a.role]));
+  for (const c of changes) if (next.has(c.email)) next.set(c.email, c.role);
+  const held = new Set(next.values());
+  return ROLES.filter((r) => !held.has(r));
+}

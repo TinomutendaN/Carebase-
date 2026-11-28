@@ -224,6 +224,14 @@ export const UploadIcon = (p: IconProps) => (
   </Icon>
 );
 
+export const DownloadIcon = (p: IconProps) => (
+  <Icon strokeWidth={2} {...p}>
+    <path d="M12 4v11" />
+    <path d="M7 10l5 5 5-5" />
+    <path d="M4 20h16" />
+  </Icon>
+);
+
 export const ShieldCheckIcon = (p: IconProps) => (
   <Icon strokeWidth={2} {...p}>
     <path d="M12 3l8 3v6c0 4.5-3.4 8.4-8 9-4.6-.6-8-4.5-8-9V6z" />

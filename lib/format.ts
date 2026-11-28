@@ -40,6 +40,12 @@ export function formatDatePadded(date: string): string {
   return `${String(d).padStart(2, "0")} ${MONTHS_SHORT[m]} ${y}`;
 }
 
+/** "27 November" */
+export function formatDayLongMonth(date: string): string {
+  const [, m, d] = parts(date);
+  return `${d} ${MONTHS_LONG[m]}`;
+}
+
 /** "March 2019" */
 export function formatMonthYear(date: string): string {
   const [y, m] = parts(date);

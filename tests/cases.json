@@ -296,17 +296,27 @@
     },
     {
       "id": "T-47", "category": "role_rules", "patient": "76057",
-      "question": "Clinician opens the audit log and export.",
-      "expected": "Blocked and logged. Only Admins can see them",
-      "check": { "type": "page", "role": "clinician", "path": "/admin", "area": "audit_export", "logged": "Tried to open the audit log" },
-      "step10": true
+      "question": "Clinician opens the audit log, exports data, and changes a role (the Admin APIs).",
+      "expected": "Each refused with 403 and logged as blocked. Only Admins can use them",
+      "check": {
+        "type": "api", "role": "clinician", "method": "GET", "path": "/api/audit", "status": 403, "logged": "Tried to open the audit log",
+        "also": [
+          { "method": "POST", "path": "/api/export", "logged": "Tried to export de-identified data" },
+          { "method": "PATCH", "path": "/api/roles", "body": "empty", "logged": "Tried to change a role" }
+        ]
+      }
     },
     {
       "id": "T-48", "category": "role_rules", "patient": "76057",
-      "question": "Front Desk opens the audit log and export.",
-      "expected": "Blocked and logged. Only Admins can see them",
-      "check": { "type": "page", "role": "front_desk", "path": "/admin", "area": "audit_export", "logged": "Tried to open the audit log" },
-      "step10": true
+      "question": "Front Desk opens the audit log, exports data, and changes a role (the Admin APIs).",
+      "expected": "Each refused with 403 and logged as blocked. Only Admins can use them",
+      "check": {
+        "type": "api", "role": "front_desk", "method": "GET", "path": "/api/audit", "status": 403, "logged": "Tried to open the audit log",
+        "also": [
+          { "method": "POST", "path": "/api/export", "logged": "Tried to export de-identified data" },
+          { "method": "PATCH", "path": "/api/roles", "body": "empty", "logged": "Tried to change a role" }
+        ]
+      }
     }
   ]
 }

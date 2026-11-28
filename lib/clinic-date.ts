@@ -38,3 +38,17 @@ export function weekStart(date: string): string {
   const day = new Date(`${date.slice(0, 10)}T00:00:00Z`).getUTCDay(); // 0 = Sunday
   return addDays(date, -((day + 6) % 7));
 }
+
+/**
+ * A moment as the clinic's wall-clock time and zone, e.g. { time: "11:42", zone: "EST" }.
+ * The zone abbreviation follows daylight saving (EST in winter, EDT in summer).
+ */
+export function clinicClock(at: Date | string): { time: string; zone: string } {
+  const date = typeof at === "string" ? new Date(at) : at;
+  const timeZone = clinicTimeZone();
+  const time = date.toLocaleTimeString("en-GB", { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  const zone = new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "short" })
+    .formatToParts(date)
+    .find((p) => p.type === "timeZoneName")?.value ?? timeZone;
+  return { time, zone };
+}

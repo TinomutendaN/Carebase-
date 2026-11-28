@@ -14,7 +14,7 @@ import { join } from "node:path";
 import { neon } from "@neondatabase/serverless";
 import { readUIMessageStream, type UIMessage, type UIMessageChunk } from "ai";
 import { z } from "zod";
-import { can, ROLES, type Role } from "@/lib/access";
+import { ROLES, type Role } from "@/lib/access";
 import { declineMessage, DECLINE_REASONS } from "@/lib/ai/assistant-prompt";
 import { viewAnswer } from "@/lib/ai/sources";
 import { clinicToday } from "@/lib/clinic-date";
@@ -80,8 +80,9 @@ const Check = z.discriminatedUnion("type", [
     status: z.number().int(),
     logged: z.string().optional(),
     body200: z.literal("hba1cPoints").optional(),
+    /** More requests in the same case, each expected to get the same status and log its own row. */
+    also: z.array(z.object({ method: z.enum(["GET", "POST", "PATCH"]), path: z.string(), body: z.literal("empty").optional(), logged: z.string() })).optional(),
   }),
-  z.object({ type: z.literal("page"), role: z.enum(ROLES), path: z.string(), area: z.string(), logged: z.string() }),
 ]);
 const Case = z.object({
   id: z.string(),
@@ -92,7 +93,6 @@ const Case = z.object({
   expected: z.string(),
   check: Check,
   allowNumbers: z.array(z.number()).optional(),
-  step10: z.boolean().optional(),
 });
 type TestCase = z.infer<typeof Case>;
 
@@ -461,34 +461,32 @@ async function runApiCase(c: TestCase, ctx: Context): Promise<Result> {
   if (check.logged && check.role && !(await blockedSince(check.role, check.logged, since))) {
     return done({ pass: false, reason: `No "${check.logged}" row in the audit log` }, actual);
   }
+  // The other requests in this case, e.g. every Admin API for one role.
+  if (check.also?.length) {
+    const actuals = [`${check.method} ${check.path}: ${actual}`];
+    for (const extra of check.also) {
+      const extraSince = await dbNow();
+      const extraHeaders: Record<string, string> = check.role ? { cookie: cookies.get(check.role)! } : {};
+      // An empty JSON body: if the role check ever broke, the route answers 400 and changes nothing.
+      if (extra.body === "empty") extraHeaders["content-type"] = "application/json";
+      const r = await fetch(`${BASE_URL}${extra.path}`, {
+        method: extra.method, headers: extraHeaders, body: extra.body === "empty" ? "{}" : undefined, redirect: "manual",
+      });
+      actuals.push(`${extra.method} ${extra.path}: HTTP ${r.status}: ${(await r.text()).slice(0, 120)}`);
+      const all = actuals.join(" | ");
+      if (r.status !== check.status) return done({ pass: false, reason: `${extra.method} ${extra.path}: expected HTTP ${check.status}, got ${r.status}` }, all);
+      if (check.role && !(await blockedSince(check.role, extra.logged, extraSince))) {
+        return done({ pass: false, reason: `${extra.method} ${extra.path}: no "${extra.logged}" row in the audit log` }, all);
+      }
+    }
+    return done({ pass: true }, actuals.join(" | "));
+  }
   if (check.body200 === "hba1cPoints") {
     const series = JSON.parse(text) as { points?: { value: number; date: string }[] };
     const want = labsFor(data, "hba1c").map((l) => `${l.date}:${l.value}`).join(",");
     const got = (series.points ?? []).map((p) => `${p.date}:${p.value}`).join(",");
     if (got !== want) return done({ pass: false, reason: `The results differ from the database: got ${got}, expected ${want}` }, actual);
   }
-  return done({ pass: true }, actual);
-}
-
-/** Pages (Admin) until Step 10 adds their APIs: the role table, the page redirect, and the blocked row. */
-async function runPageCase(c: TestCase, ctx: Context): Promise<Result> {
-  const check = c.check;
-  if (check.type !== "page") throw new Error(`${c.id}: not a page case.`);
-  const data = patientFor(c, ctx);
-  const done = (outcome: Outcome, actual: string): Result => ({ c, patientName: data.name, expected: c.expected, outcome, actual });
-
-  if (can(check.role, check.area as Parameters<typeof can>[1])) {
-    return done({ pass: false, reason: `lib/access.ts lets ${check.role} see ${check.area}` }, `can(${check.role}, ${check.area}) = true`);
-  }
-  const since = await dbNow();
-  const res = await fetch(`${BASE_URL}${check.path}`, { headers: { cookie: cookies.get(check.role)! }, redirect: "manual" });
-  const html = await res.text();
-  const location = res.headers.get("location") ?? "";
-  // A redirect inside a streamed page arrives as a 200 with Next's redirect marker.
-  const redirected = (res.status >= 300 && res.status < 400 && location.endsWith("/dashboard")) || (res.status === 200 && /NEXT_REDIRECT[^"]*\/dashboard|__next-page-redirect[^>]*\/dashboard/.test(html));
-  const actual = `can(${check.role}, ${check.area}) = false; GET ${check.path}: HTTP ${res.status}${location ? ` → ${location}` : ""}${redirected ? " (redirected to /dashboard)" : " (page shown)"}`;
-  if (!redirected) return done({ pass: false, reason: `${check.path} opened instead of sending ${check.role} to the dashboard` }, actual);
-  if (!(await blockedSince(check.role, check.logged, since))) return done({ pass: false, reason: `No "${check.logged}" row in the audit log` }, actual);
   return done({ pass: true }, actual);
 }
 
@@ -508,7 +506,7 @@ async function pool<T, R>(items: T[], size: number, work: (item: T) => Promise<R
   return results;
 }
 
-const isAsk = (c: TestCase) => !["api", "page", "runWideNames"].includes(c.check.type);
+const isAsk = (c: TestCase) => !["api", "runWideNames"].includes(c.check.type);
 
 async function main() {
   const started = Date.now();
@@ -533,7 +531,7 @@ async function main() {
       console.log(`${r.outcome.pass ? "PASS" : "FAIL"}  ${r.c.id}  ${r.c.question}`);
     }
     for (const c of cases.filter((x) => !isAsk(x))) {
-      const r = c.check.type === "runWideNames" ? runWideCase(c, ctx) : c.check.type === "page" ? await runPageCase(c, ctx) : await runApiCase(c, ctx);
+      const r = c.check.type === "runWideNames" ? runWideCase(c, ctx) : await runApiCase(c, ctx);
       results.set(c.id, r);
       console.log(`${r.outcome.pass ? "PASS" : "FAIL"}  ${c.id}  ${c.question}`);
     }
