@@ -15,7 +15,9 @@ export type RecentPatient = {
 
 /**
  * The patients this account opened most recently, newest first, read from the
- * audit log's "Viewed record" rows (no separate table).
+ * audit log's "Viewed record" rows (no separate table). Only patients someone
+ * chose to open: the Dashboard spotlight's views (via "dashboard") are logged
+ * but left out.
  */
 export async function getRecentlyViewed(email: string, limit = 6): Promise<RecentPatient[]> {
   const rows = await sql`
@@ -24,6 +26,7 @@ export async function getRecentlyViewed(email: string, limit = 6): Promise<Recen
       SELECT record_id, max(occurred_at) AS viewed_at
       FROM audit_log
       WHERE account_email = ${email} AND kind = 'view' AND action = 'Viewed record' AND record_type = 'patient'
+        AND (details->>'via') IS DISTINCT FROM 'dashboard'
       GROUP BY record_id
       ORDER BY viewed_at DESC
       LIMIT ${limit}
