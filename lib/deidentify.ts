@@ -11,8 +11,9 @@ import { ageFrom } from "@/lib/format";
  *   numbered after a random shuffle, so the order can't be matched back to MRNs.
  * - Birth dates become the year only. Anyone aged 90 or over gets no year at all,
  *   just age_90_plus: true, because a birth year alone can identify very old patients.
- * - Every date is shifted by a random number of days, the same for all of one
+ * - Every date is moved earlier by a random 30 to 365 days, the same for all of one
  *   patient's records, so the gaps between their visits and results stay true.
+ *   Shifts only go backwards, so no exported date is ever after the export date.
  *   A shift that would move any record onto the patient's own birth date is redrawn.
  *   Shifts are never stored or written out, and each export draws new ones.
  * - Free text: tasks and intake documents are not exported at all. Visit reasons,
@@ -24,12 +25,12 @@ export const EXPORT_RULES = [
   "Names and identifiers removed: name, MRN, phone, email, address, insurance member ID and internal IDs.",
   "Each patient has a new ID (P-0001…), assigned in random order for every export.",
   "Birth dates reduced to the year. Patients aged 90 or over have no birth year, only age_90_plus.",
-  "Every date is shifted by a random number of days, the same for all of one patient's records, so the gaps between records stay true.",
+  "Every date is moved earlier by a random 30 to 365 days, the same for all of one patient's records, so the gaps between records stay true and no date is after the export date.",
   "Dates are shifted per patient, not removed, so this export does not meet HIPAA Safe Harbor.",
   "Staff-written text (tasks, intake documents) is not included. Coded text that contains a name is removed.",
 ] as const;
 
-/** Shifts are 30 to 365 days, earlier or later, never zero. */
+/** Shifts are 30 to 365 days earlier, never later and never zero. */
 export const MIN_SHIFT_DAYS = 30;
 export const MAX_SHIFT_DAYS = 365;
 export const OLDEST_EXACT_AGE = 89;
@@ -38,9 +39,9 @@ export const OLDEST_EXACT_AGE = 89;
 export type Rng = (minInclusive: number, maxExclusive: number) => number;
 const cryptoRng: Rng = (min, max) => randomInt(min, max);
 
+/** A negative number of days: every shift moves dates earlier. */
 export function randomShiftDays(rng: Rng = cryptoRng): number {
-  const days = rng(MIN_SHIFT_DAYS, MAX_SHIFT_DAYS + 1);
-  return rng(0, 2) === 0 ? -days : days;
+  return -rng(MIN_SHIFT_DAYS, MAX_SHIFT_DAYS + 1);
 }
 
 /** Whole days from one "YYYY-MM-DD" date to another. */

@@ -7,6 +7,7 @@
  * `--sample` also prints the first 3 patients with a few rows of each table.
  * Reads only: it writes nothing to the database and no audit row.
  */
+import { clinicToday } from "@/lib/clinic-date";
 import { sql } from "@/lib/db/client";
 import { loadExportSource } from "@/lib/db/queries/export";
 import {
@@ -56,7 +57,8 @@ const dayDiff = (a: string, b: string) => Math.round((Date.parse(a) - Date.parse
 async function main() {
   const today = new Date();
   const source: ExportSource = await loadExportSource();
-  const { file, shifts } = deidentify(source, { today, exportedOn: today.toISOString().slice(0, 10) });
+  // The same export date as POST /api/export: the clinic's today.
+  const { file, shifts } = deidentify(source, { today, exportedOn: clinicToday() });
   const body = JSON.stringify(file);
   const bytes = Buffer.byteLength(body);
 
@@ -191,7 +193,7 @@ async function main() {
   for (const p of patients) {
     const { exportId, days } = shifts.get(p.id)!;
     distinctShifts.add(days);
-    if (days === 0 || Math.abs(days) < MIN_SHIFT_DAYS || Math.abs(days) > MAX_SHIFT_DAYS) badShift += 1;
+    if (days > -MIN_SHIFT_DAYS || days < -MAX_SHIFT_DAYS) badShift += 1;
     const exported = byExportId.get(exportId)!;
     for (const t of tables) {
       const want = t.db.get(p.id) ?? [];
@@ -204,10 +206,17 @@ async function main() {
       }
     }
   }
-  check(badShift === 0, `Every patient's shift is between ${MIN_SHIFT_DAYS} and ${MAX_SHIFT_DAYS} days, earlier or later, never zero`,
+  check(badShift === 0, `Every patient's shift is ${MIN_SHIFT_DAYS} to ${MAX_SHIFT_DAYS} days earlier (never later, never zero)`,
     `${distinctShifts.size} different shifts across ${patients.length} patients`);
   check(notConstant === 0, "Each patient's dates all move by the same number of days, so gaps stay true",
     `${compared.toLocaleString("en-US")} lab, visit, wearable and condition dates compared with the database`);
+
+  // ----- No date after the export date.
+  const isoDates = all.map((s) => s.text).filter((t) => /^\d{4}-\d{2}-\d{2}$/.test(t) && t !== file.exported_on);
+  const future = isoDates.filter((d) => d > file.exported_on);
+  const latest = isoDates.reduce((a, b) => (b > a ? b : a), "");
+  check(future.length === 0, `No date in the file is after the export date (${file.exported_on})`,
+    `${isoDates.length.toLocaleString("en-US")} dates checked; latest ${latest}${future.length ? `; ${future.length} after, e.g. ${future[0]}` : ""}`);
 
   for (const n of notes) console.log(`\nNOTE  ${n}`);
 
