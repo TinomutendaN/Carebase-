@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { isRole, type Role } from "@/lib/access";
@@ -17,13 +18,15 @@ export type Session = {
   name: string;
   initials: string;
   role: Role;
+  /** A test runner account (scripts/run-tests.ts), not a demo account. */
+  isTest: boolean;
 };
 
-type AccountRow = { id: string; email: string; name: string; initials: string; role: string };
+type AccountRow = { id: string; email: string; name: string; initials: string; role: string; is_test: boolean };
 
 function toSession(row: AccountRow | undefined): Session | null {
   if (!row || !isRole(row.role)) return null;
-  return { accountId: Number(row.id), email: row.email, name: row.name, initials: row.initials, role: row.role };
+  return { accountId: Number(row.id), email: row.email, name: row.name, initials: row.initials, role: row.role, isTest: row.is_test };
 }
 
 /**
@@ -34,7 +37,7 @@ export const getSession = cache(async (): Promise<Session | null> => {
   const email = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!email) return null;
   const rows = (await sql`
-    SELECT id, email, name, initials, role FROM accounts WHERE email = ${email}
+    SELECT id, email, name, initials, role, is_test FROM accounts WHERE email = ${email}
   `) as AccountRow[];
   return toSession(rows[0]);
 });
@@ -43,9 +46,9 @@ export const getSession = cache(async (): Promise<Session | null> => {
  * Sign in as the demo account that holds this role. Returns null if no account has it.
  * Route handlers and server actions only.
  */
-export async function signInAsRole(role: Role): Promise<Session | null> {
+export async function signInAsRole(role: Role, { test = false }: { test?: boolean } = {}): Promise<Session | null> {
   const rows = (await sql`
-    SELECT id, email, name, initials, role FROM accounts WHERE role = ${role} ORDER BY id LIMIT 1
+    SELECT id, email, name, initials, role, is_test FROM accounts WHERE role = ${role} AND is_test = ${test} ORDER BY id LIMIT 1
   `) as AccountRow[];
   const session = toSession(rows[0]);
   if (!session) return null;
@@ -58,6 +61,18 @@ export async function signInAsRole(role: Role): Promise<Session | null> {
     maxAge: MAX_AGE_SECONDS,
   });
   return session;
+}
+
+/**
+ * True when the request carries the test runner's key (TEST_RUNNER_SECRET), so it may
+ * sign in as a test account. Always false when the secret isn't set.
+ */
+export function isTestRunnerKey(key: string | null): boolean {
+  const secret = process.env.TEST_RUNNER_SECRET?.trim();
+  if (!secret || !key) return false;
+  const a = Buffer.from(key);
+  const b = Buffer.from(secret);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 /** Sign out. Route handlers and server actions only. */

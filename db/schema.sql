@@ -203,3 +203,17 @@ CREATE TABLE IF NOT EXISTS test_results (
   actual   text,
   UNIQUE (run_id, case_id)
 );
+
+-- Step 9: the test runner signs in as separate test accounts, so test questions
+-- never count towards the public assistant cap and the audit viewer can hide them.
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;
+-- Which site a run tested (the Tests page shows the latest live run), how long it took, and its tokens.
+ALTER TABLE test_runs ADD COLUMN IF NOT EXISTS base_url text;
+ALTER TABLE test_runs ADD COLUMN IF NOT EXISTS duration_ms integer;
+ALTER TABLE test_runs ADD COLUMN IF NOT EXISTS input_tokens integer;
+ALTER TABLE test_runs ADD COLUMN IF NOT EXISTS output_tokens integer;
+CREATE INDEX IF NOT EXISTS test_runs_base_ran_idx ON test_runs (base_url, ran_at DESC);
+-- Who the case is about, and in plain words which check failed.
+ALTER TABLE test_results ADD COLUMN IF NOT EXISTS patient text;
+ALTER TABLE test_results ADD COLUMN IF NOT EXISTS reason text;
+ALTER TABLE test_results ADD COLUMN IF NOT EXISTS position integer;

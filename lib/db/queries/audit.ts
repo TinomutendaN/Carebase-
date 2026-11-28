@@ -45,11 +45,16 @@ export async function getRecentlyViewed(email: string, limit = 6): Promise<Recen
 /** The audit action for every assistant question. The daily cap counts these rows. */
 export const ASKED_ASSISTANT = "Asked the assistant about";
 
-/** Assistant questions asked today (clinic time zone), by everyone: the demo accounts are shared. */
-export async function countAssistantQuestionsToday(today: string): Promise<number> {
+/**
+ * Assistant questions asked today (clinic time zone). The demo accounts are shared, so
+ * this counts everyone on them. Test runner accounts have a cap of their own (test: true),
+ * so test runs never use up the public demo's questions.
+ */
+export async function countAssistantQuestionsToday(today: string, { test = false }: { test?: boolean } = {}): Promise<number> {
   const rows = await sql`
     SELECT count(*)::int AS n FROM audit_log
     WHERE action = ${ASKED_ASSISTANT} AND (occurred_at AT TIME ZONE ${clinicTimeZone()})::date = ${today}::date
+      AND (account_email IN (SELECT email FROM accounts WHERE is_test)) = ${test}
   `;
   return Number(rows[0].n);
 }

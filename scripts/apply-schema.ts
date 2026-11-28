@@ -1,5 +1,5 @@
 /**
- * Apply db/schema.sql to Neon and seed the three demo accounts.
+ * Apply db/schema.sql to Neon and seed the three demo accounts (plus the test runner's).
  * Safe to run more than once. Run with: npm run db:schema
  */
 import { readFileSync } from "node:fs";
@@ -14,6 +14,15 @@ const DEMO_ACCOUNTS_SQL = `
   ON CONFLICT (email) DO NOTHING
 `;
 
+/** Step 9: the test runner's accounts. Hidden from Sign in; their questions skip the public cap. */
+const TEST_ACCOUNTS_SQL = `
+  INSERT INTO accounts (email, name, initials, role, is_test) VALUES
+    ('tests-frontdesk@carebase.demo', 'Test Runner (Front Desk)', 'TF', 'front_desk', true),
+    ('tests-clinician@carebase.demo', 'Test Runner (Clinician)',  'TC', 'clinician',  true),
+    ('tests-admin@carebase.demo',     'Test Runner (Admin)',      'TA', 'admin',      true)
+  ON CONFLICT (email) DO UPDATE SET is_test = true, role = EXCLUDED.role
+`;
+
 async function main() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set. Add it to .env.local.");
 
@@ -22,6 +31,7 @@ async function main() {
     // Pool uses the simple query protocol, so the whole file runs in one call.
     await pool.query(readFileSync(join(process.cwd(), "db", "schema.sql"), "utf8"));
     const seeded = await pool.query(DEMO_ACCOUNTS_SQL);
+    await pool.query(TEST_ACCOUNTS_SQL);
 
     const { rows } = await pool.query(
       "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name",

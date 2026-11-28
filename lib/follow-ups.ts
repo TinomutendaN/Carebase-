@@ -263,7 +263,7 @@ export async function createFollowUps(options: { patientId?: string; windowDays?
 
 /** Lab follow-ups go to the clinician (the first clinician account). */
 async function clinicianAccount(): Promise<{ id: number; name: string }> {
-  const rows = await sql`SELECT id::int AS id, name FROM accounts WHERE role = 'clinician' ORDER BY id LIMIT 1`;
+  const rows = await sql`SELECT id::int AS id, name FROM accounts WHERE role = 'clinician' AND NOT is_test ORDER BY id LIMIT 1`;
   if (rows.length === 0) throw new Error("No clinician account to assign follow-up tasks to. Run npm run db:schema.");
   return { id: Number(rows[0].id), name: rows[0].name };
 }

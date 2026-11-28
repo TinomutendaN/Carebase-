@@ -4,7 +4,7 @@ import { z } from "zod";
 import { can } from "@/lib/access";
 import { buildSystemPrompt } from "@/lib/ai/assistant-prompt";
 import { MAX_QUESTION_CHARS } from "@/lib/ai/limits";
-import { getModel } from "@/lib/ai/model";
+import { getModel, getModelName } from "@/lib/ai/model";
 import { buildTools } from "@/lib/ai/tools";
 import { logBlocked, logView } from "@/lib/audit";
 import { clinicToday } from "@/lib/clinic-date";
@@ -24,9 +24,10 @@ const HISTORY_MESSAGES = 8;
 const MAX_STEPS = 5;
 const TIMEOUT_MS = 45_000;
 
-function dailyLimit(): number {
-  const n = Number(process.env.ASSISTANT_DAILY_LIMIT);
-  return Number.isInteger(n) && n >= 0 ? n : 200;
+function dailyLimit(test: boolean): number {
+  const n = Number(test ? process.env.ASSISTANT_TEST_DAILY_LIMIT : process.env.ASSISTANT_DAILY_LIMIT);
+  if (Number.isInteger(n) && n >= 0) return n;
+  return test ? 150 : 200;
 }
 
 function maxOutputTokens(): number {
@@ -85,8 +86,8 @@ export async function POST(request: Request) {
   }
 
   const today = clinicToday();
-  const limit = dailyLimit();
-  if ((await countAssistantQuestionsToday(today)) >= limit) {
+  const limit = dailyLimit(session.isTest);
+  if ((await countAssistantQuestionsToday(today, { test: session.isTest })) >= limit) {
     return Response.json(
       { error: `The demo answers up to ${limit} questions a day. Try again tomorrow.` },
       { status: 429, headers: NO_STORE },
@@ -129,6 +130,13 @@ export async function POST(request: Request) {
       stream: result.stream,
       tools,
       sendReasoning: false,
+      // The test runner records which model answered and the tokens it used.
+      messageMetadata: session.isTest
+        ? ({ part }) =>
+            part.type === "finish"
+              ? { model: getModelName() ?? null, inputTokens: part.totalUsage.inputTokens ?? null, outputTokens: part.totalUsage.outputTokens ?? null }
+              : undefined
+        : undefined,
       onError: (error) => {
         console.error("Assistant answer failed", error);
         return "The assistant couldn't answer just now. Please try again.";
