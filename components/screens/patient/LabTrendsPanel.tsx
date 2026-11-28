@@ -20,13 +20,28 @@ type Props = {
   initial: LabSeries | null;
   /** The wearables column. */
   children: ReactNode;
+  /**
+   * The Dashboard's "Patient spotlight" version of the panel: its own title, the
+   * patient in the subtitle, an "Open Record" action, a note in the locked box,
+   * and the chart key underneath. Omitted on the Patient page.
+   */
+  spotlight?: {
+    /** "CAITLYN STREICH · MRN 12345", followed by the shown lab's status. */
+    subtitle: string;
+    /** Subtitle ending when labs are hidden, e.g. the task's title. */
+    lockedSubtitle: string;
+    /** Extra line in the locked box, e.g. "Your task: Call to book a follow-up visit." */
+    lockedNote?: string;
+    action: ReactNode;
+    footer: ReactNode;
+  };
 };
 
 /**
  * "Lab trends and wearables": the dark teal panel on the Patient page. Switching
  * labs loads that lab once from /api/patients/{id}/labs, which checks the role again.
  */
-export function LabTrendsPanel({ patientId, labs, initial, children }: Props) {
+export function LabTrendsPanel({ patientId, labs, initial, children, spotlight }: Props) {
   const locked = labs === null;
   const [code, setCode] = useState(initial?.code ?? labs?.[0]?.code ?? "");
   const [cache, setCache] = useState<Record<string, LabSeries>>(initial ? { [initial.code]: initial } : {});
@@ -63,43 +78,63 @@ export function LabTrendsPanel({ patientId, labs, initial, children }: Props) {
 
   const series = cache[code];
   const latest = series?.points.at(-1);
-  const subtitle = locked
-    ? "WEARABLES ONLY · LABS HIDDEN FOR FRONT DESK"
-    : series && latest
-      ? `LATEST ${series.name.toUpperCase()} ${latest.value} ${series.unit.toUpperCase()} · ${STATUS_WORDS[rangeStatus(latest.value, series.low, series.high)]}`
-      : labs.length === 0
-        ? "NO LAB RESULTS ON FILE"
-        : "LOADING…";
+  const rangeWord = series && latest ? STATUS_WORDS[rangeStatus(latest.value, series.low, series.high)] : null;
+  const subtitle = spotlight
+    ? `${spotlight.subtitle} · ${
+        locked
+          ? spotlight.lockedSubtitle
+          : series && rangeWord
+            ? `${series.name.toUpperCase()} ${rangeWord}`
+            : labs.length === 0
+              ? "NO LAB RESULTS ON FILE"
+              : "LOADING…"
+      }`
+    : locked
+      ? "WEARABLES ONLY · LABS HIDDEN FOR FRONT DESK"
+      : series && latest
+        ? `LATEST ${series.name.toUpperCase()} ${latest.value} ${series.unit.toUpperCase()} · ${rangeWord}`
+        : labs.length === 0
+          ? "NO LAB RESULTS ON FILE"
+          : "LOADING…";
 
   return (
-    <Panel tone="teal" aria-labelledby="labs-title" className="flex flex-col gap-[18px] p-[22px]">
+    <Panel
+      tone="teal"
+      aria-labelledby="labs-title"
+      className={spotlight ? "flex flex-col gap-5 p-6 max-sm:p-4" : "flex flex-col gap-[18px] p-[22px]"}
+    >
       <div className="flex flex-wrap items-center justify-between gap-3.5">
-        <div className="flex items-center gap-3">
-          <IconChip color="teal" size={40}>
-            <PulseIcon strokeWidth={2} />
+        <div className={spotlight ? "flex min-w-0 flex-[1_1_320px] items-center gap-3.5" : "flex items-center gap-3"}>
+          <IconChip color="teal" size={spotlight ? 44 : 40}>
+            <PulseIcon size={spotlight ? 20 : 18} strokeWidth={2} />
           </IconChip>
-          <div className="flex flex-col gap-0.5">
-            <h2 id="labs-title" className="m-0 text-[17px] font-bold">
-              Lab trends and wearables
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <h2 id="labs-title" className={spotlight ? "m-0 text-lg font-bold" : "m-0 text-[17px] font-bold"}>
+              {spotlight ? "Patient spotlight" : "Lab trends and wearables"}
             </h2>
-            <span className="font-mono text-[11px] text-teal-muted">{subtitle}</span>
+            <span className={spotlight ? "font-mono text-xs text-teal-muted" : "font-mono text-[11px] text-teal-muted"}>
+              {subtitle}
+            </span>
           </div>
         </div>
-        {!locked && labs.length > 1 && (
-          <PillGroup label="Lab test" tone="dark">
-            {labs.map((lab) => (
-              <Pill key={lab.code} tone="dark" pressed={lab.code === code} onClick={() => pick(lab.code)}>
-                {lab.name}
-              </Pill>
-            ))}
-          </PillGroup>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {!locked && labs.length > 1 && (
+            <PillGroup label="Lab test" tone="dark">
+              {labs.map((lab) => (
+                <Pill key={lab.code} tone="dark" pressed={lab.code === code} onClick={() => pick(lab.code)}>
+                  {lab.name}
+                </Pill>
+              ))}
+            </PillGroup>
+          )}
+          {spotlight?.action}
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-4">
         <div ref={chartRef} className="flex min-w-0 flex-[2_1_440px] flex-col gap-2.5 rounded-[20px] border border-white/8 bg-[rgba(3,16,26,0.45)] px-[18px] py-4">
           {locked ? (
-            <LockedLabs />
+            <LockedLabs note={spotlight?.lockedNote} />
           ) : series && status !== "loading" ? (
             <ResponsiveLabTrendChart
               points={series.points}
@@ -122,11 +157,12 @@ export function LabTrendsPanel({ patientId, labs, initial, children }: Props) {
         </div>
         {children}
       </div>
+      {spotlight?.footer}
     </Panel>
   );
 }
 
-function LockedLabs() {
+function LockedLabs({ note }: { note?: string }) {
   return (
     <div className="flex min-h-[240px] flex-col items-center justify-center gap-2.5 rounded-2xl border border-dashed border-[rgba(94,234,212,0.3)] bg-[rgba(45,212,191,0.04)] p-6 text-center">
       <span className="flex size-12 items-center justify-center rounded-[15px] bg-teal/12 text-mint">
@@ -134,7 +170,7 @@ function LockedLabs() {
       </span>
       <span className="text-[15px] font-bold">Lab results are hidden for Front Desk</span>
       <span className="max-w-[340px] text-[13px] leading-normal text-teal-muted">
-        Clinicians and Admins can see this patient&apos;s lab trends.
+        Clinicians and Admins can see this patient&apos;s lab trends.{note ? ` ${note}` : ""}
       </span>
     </div>
   );

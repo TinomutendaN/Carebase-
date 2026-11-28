@@ -46,12 +46,14 @@ export function SearchField({ placeholder = "Search patients…" }: { placeholde
   );
 }
 
-/** Bell linking to Tasks, with the number of tasks due today. */
+/** Bell linking to Tasks, with the number of open tasks that are overdue or due today. */
 export function TaskBell({ count }: { count: number }) {
+  const label = `${count} ${count === 1 ? "task" : "tasks"} overdue or due today`;
   return (
     <Link
       href="/tasks"
-      aria-label={`${count} ${count === 1 ? "task" : "tasks"} due today`}
+      aria-label={label}
+      title={label}
       className="relative flex size-11 items-center justify-center rounded-xl border border-field-border bg-surface text-nav-text shadow-field"
     >
       <BellIcon />

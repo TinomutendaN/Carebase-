@@ -1,3 +1,4 @@
+import { clinicTimeZone } from "@/lib/clinic-date";
 import { sql } from "@/lib/db/client";
 import { createFollowUps } from "@/lib/follow-ups";
 import { labShortName, labStatus, MAIN_LAB_GROUPS, rangeCaption } from "@/lib/lab-display";
@@ -111,4 +112,39 @@ export async function addLabResult(input: { patientId: string; code: string; val
     outOfRange: status === "above" || status === "below",
     followUps: await createFollowUps({ patientId: input.patientId }),
   };
+}
+
+export type OutOfRangeCount = { total: number; high: number; low: number };
+
+/**
+ * Out-of-range lab results taken from `firstDay` to `today` (clinic dates), clinic-wide,
+ * for the Dashboard's "Out-of-range lab results this week". These are the results
+ * lib/follow-ups.ts turns into AUTO · LAB tasks. Counts only, no values.
+ */
+export async function countOutOfRange(firstDay: string, today: string): Promise<OutOfRangeCount> {
+  const tz = clinicTimeZone();
+  const rows = await sql`
+    SELECT count(*) FILTER (WHERE value > normal_high)::int AS high,
+           count(*) FILTER (WHERE value < normal_low)::int AS low
+    FROM lab_results
+    WHERE (value < normal_low OR value > normal_high)
+      AND taken_at >= ${firstDay}::date - 1          -- coarse bound so the taken_at index is used
+      AND (taken_at AT TIME ZONE ${tz})::date BETWEEN ${firstDay}::date AND ${today}::date
+  `;
+  const high = Number(rows[0].high);
+  const low = Number(rows[0].low);
+  return { total: high + low, high, low };
+}
+
+/**
+ * The lab an automatic (lab) task is titled after, so the Dashboard spotlight can
+ * open on it. Null for staff tasks. Callers check can(role, "lab_results") first.
+ */
+export async function getTaskLab(taskId: number): Promise<LabCode | null> {
+  const rows = await sql`
+    SELECT l.code, l.name, l.unit FROM tasks t JOIN lab_results l ON l.id = t.lab_result_id
+    WHERE t.id = ${taskId} AND t.source = 'lab'
+  `;
+  const r = rows[0];
+  return r ? { code: r.code, name: labShortName(r.code, r.name), unit: r.unit, count: 0 } : null;
 }

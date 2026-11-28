@@ -5,7 +5,9 @@ import { PatientsTopBar, PatientsTopBarFallback } from "@/components/screens/sea
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
 import { ArrowRightIcon, SearchIcon } from "@/components/ui/icons";
+import { clinicToday, weekStart } from "@/lib/clinic-date";
 import { getRecentlyViewed } from "@/lib/db/queries/audit";
+import { countPatients } from "@/lib/db/queries/patients";
 import { formatDate } from "@/lib/format";
 import { getSession } from "@/lib/session";
 
@@ -28,15 +30,24 @@ export default function PatientsPage() {
 async function RecentlyViewed() {
   const session = await getSession();
   if (!session) redirect("/");
-  const recent = await getRecentlyViewed(session.email, 8);
+  // The same counts as the Dashboard's Patients cards.
+  const [recent, counts] = await Promise.all([
+    getRecentlyViewed(session.email, 8),
+    countPatients(weekStart(clinicToday())),
+  ]);
 
   return (
     <Card size="lg" as="section" aria-labelledby="recent-title" className="flex flex-col gap-1">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2.5">
-        <h2 id="recent-title" className="m-0 text-[17px] font-bold">
-          Recently viewed
-        </h2>
-        <span className="text-xs text-secondary">Patients you opened, newest first</span>
+        <div className="flex flex-col gap-0.5">
+          <h2 id="recent-title" className="m-0 text-[17px] font-bold">
+            Recently viewed
+          </h2>
+          <span className="text-xs text-secondary">Patients you opened, newest first</span>
+        </div>
+        <span className="rounded-full bg-tab-track px-3 py-1 text-xs font-semibold text-nav-text">
+          {counts.total} {counts.total === 1 ? "patient" : "patients"} · {counts.addedThisWeek} added this week
+        </span>
       </div>
 
       {recent.length === 0 ? (

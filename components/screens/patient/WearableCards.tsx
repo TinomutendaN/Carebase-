@@ -9,10 +9,13 @@ const CARDS: { kind: WearableKind; label: string; unit: string; color: string; f
 ];
 
 /** Heart rate, sleep and steps: 14-day averages with a sparkline of the daily values. */
-export function WearableCards({ wearables }: { wearables: Record<WearableKind, WearableSeries> }) {
+export function WearableCards({ wearables, label = "WEARABLES · 14 DAYS" }: {
+  wearables: Record<WearableKind, WearableSeries>;
+  label?: string;
+}) {
   return (
     <div id="wearables" className="flex min-w-0 flex-[1_1_220px] flex-col gap-2.5">
-      <span className="font-mono text-[11px] tracking-[0.14em] text-mint-label">WEARABLES · 14 DAYS</span>
+      <span className="font-mono text-[11px] tracking-[0.14em] text-mint-label">{label}</span>
       {CARDS.map((card) => {
         const series = wearables[card.kind];
         const value = series.average == null ? "—" : card.format(series.average);

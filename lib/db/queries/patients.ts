@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db/client";
+import { clinicTimeZone } from "@/lib/clinic-date";
 import { ageFrom, capitalize, initialsOf } from "@/lib/format";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -54,6 +55,24 @@ export async function searchPatients(query: string): Promise<SearchResult> {
     total: rows.length ? Number(rows[0].total) : 0,
     ms,
   };
+}
+
+// ---------- Counts (Dashboard and Patients) ----------
+
+export type PatientCounts = { total: number; addedThisWeek: number };
+
+/**
+ * Every patient, and those added through Intake since `weekStart` (a clinic date).
+ * Only source 'intake' counts as added: the Synthea import isn't new patients.
+ */
+export async function countPatients(weekStart: string): Promise<PatientCounts> {
+  const rows = await sql`
+    SELECT count(*)::int AS total,
+           count(*) FILTER (WHERE source = 'intake'
+                              AND (created_at AT TIME ZONE ${clinicTimeZone()})::date >= ${weekStart}::date)::int AS added
+    FROM patients
+  `;
+  return { total: Number(rows[0].total), addedThisWeek: Number(rows[0].added) };
 }
 
 // ---------- Patient page ----------
