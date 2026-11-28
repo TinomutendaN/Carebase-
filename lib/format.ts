@@ -20,6 +20,20 @@ export function formatDate(date: string): string {
   return `${d} ${MONTHS_SHORT[m]} ${y}`;
 }
 
+/** "26 Nov", for task due dates. */
+export function formatDayMonth(date: string): string {
+  const [, m, d] = parts(date);
+  return `${d} ${MONTHS_SHORT[m]}`;
+}
+
+const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+/** "Friday, 27 November", for the top bar. */
+export function formatWeekdayDate(date: string): string {
+  const [y, m, d] = parts(date);
+  return `${WEEKDAYS[new Date(Date.UTC(y, m, d)).getUTCDay()]}, ${d} ${MONTHS_LONG[m]}`;
+}
+
 /** "02 Sep 2026", for the fixed-width mono timeline column. */
 export function formatDatePadded(date: string): string {
   const [y, m, d] = parts(date);

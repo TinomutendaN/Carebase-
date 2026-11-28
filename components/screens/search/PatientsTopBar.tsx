@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { PatientSearch } from "@/components/screens/search/PatientSearch";
 import { TaskBell, TopBar } from "@/components/shell/TopBar";
+import { taskScope } from "@/lib/access";
+import { clinicToday } from "@/lib/clinic-date";
 import { getRecentlyViewed } from "@/lib/db/queries/audit";
 import { countDueToday } from "@/lib/db/queries/tasks";
 import { getSession } from "@/lib/session";
@@ -13,7 +15,10 @@ const ACTIONS = "flex-[0_1_560px] justify-end";
 export async function PatientsTopBar() {
   const session = await getSession();
   if (!session) redirect("/");
-  const [recent, dueToday] = await Promise.all([getRecentlyViewed(session.email), countDueToday(session.accountId)]);
+  const [recent, dueToday] = await Promise.all([
+    getRecentlyViewed(session.email),
+    countDueToday(taskScope(session.role, session.accountId), clinicToday()),
+  ]);
   return (
     <TopBar section={SECTION} title={TITLE} actionsClassName={ACTIONS}>
       <PatientSearch recent={recent} />

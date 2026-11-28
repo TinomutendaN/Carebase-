@@ -25,3 +25,16 @@ export function clinicDate(at: Date = new Date()): string {
 export function clinicToday(): string {
   return clinicDate();
 }
+
+/** A "YYYY-MM-DD" date moved by whole days, e.g. addDays("2026-11-25", 2) → "2026-11-27". */
+export function addDays(date: string, days: number): string {
+  const d = new Date(`${date.slice(0, 10)}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Monday of the week a date falls in, for "Done this week". */
+export function weekStart(date: string): string {
+  const day = new Date(`${date.slice(0, 10)}T00:00:00Z`).getUTCDay(); // 0 = Sunday
+  return addDays(date, -((day + 6) % 7));
+}

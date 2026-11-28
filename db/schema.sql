@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   id            bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   patient_id    uuid NOT NULL REFERENCES patients (id) ON DELETE CASCADE,
   title         text NOT NULL,
-  detail        text,                -- stored for staff tasks; lab tasks derive it from the lab result
+  detail        text,                -- staff: written by people; lab: the day's out-of-range results
   source        text NOT NULL CHECK (source IN ('lab', 'staff')),
   lab_result_id bigint UNIQUE REFERENCES lab_results (id) ON DELETE SET NULL,
   assignee_id   bigint NOT NULL REFERENCES accounts (id),
@@ -128,6 +128,10 @@ CREATE TABLE IF NOT EXISTS tasks (
 );
 CREATE INDEX IF NOT EXISTS tasks_assignee_idx ON tasks (assignee_id, status, due_on);
 CREATE INDEX IF NOT EXISTS tasks_status_due_idx ON tasks (status, due_on);
+-- Step 7: lab tasks are one per patient per lab day (the clinic-time-zone date of the results).
+-- The unique index is what stops lib/follow-ups.ts creating duplicates.
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS lab_day date;
+CREATE UNIQUE INDEX IF NOT EXISTS tasks_lab_day_uniq ON tasks (patient_id, lab_day) WHERE source = 'lab';
 
 CREATE TABLE IF NOT EXISTS intake_documents (
   id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -151,7 +155,7 @@ CREATE TABLE IF NOT EXISTS audit_log (
   id            bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   occurred_at   timestamptz NOT NULL DEFAULT now(),
   account_email text NOT NULL,
-  role          text NOT NULL CHECK (role IN ('front_desk', 'clinician', 'admin')),
+  role          text NOT NULL CHECK (role IN ('front_desk', 'clinician', 'admin', 'system')),
   kind          text NOT NULL CHECK (kind IN ('view', 'change', 'blocked')),
   action        text NOT NULL,
   record_type   text NOT NULL,
@@ -159,6 +163,10 @@ CREATE TABLE IF NOT EXISTS audit_log (
   record_label  text,
   details       jsonb
 );
+-- 'system' is for automatic actions with no person behind them (follow-up tasks).
+-- Re-applied so databases created before Step 7 accept it too.
+ALTER TABLE audit_log DROP CONSTRAINT IF EXISTS audit_log_role_check;
+ALTER TABLE audit_log ADD CONSTRAINT audit_log_role_check CHECK (role IN ('front_desk', 'clinician', 'admin', 'system'));
 CREATE INDEX IF NOT EXISTS audit_log_occurred_idx ON audit_log (occurred_at DESC);
 CREATE INDEX IF NOT EXISTS audit_log_kind_idx ON audit_log (kind, occurred_at DESC);
 

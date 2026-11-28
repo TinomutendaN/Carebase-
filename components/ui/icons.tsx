@@ -238,3 +238,16 @@ export const WarningIcon = (p: IconProps) => (
     <path d="M12 17h.01" />
   </Icon>
 );
+
+export const PersonIcon = (p: IconProps) => (
+  <Icon size={14} strokeWidth={2} {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+  </Icon>
+);
+
+export const BoltIcon = (p: IconProps) => (
+  <Icon strokeWidth={2} {...p}>
+    <path d="M13 2L4 14h7l-1 8 9-12h-7z" />
+  </Icon>
+);

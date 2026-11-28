@@ -12,7 +12,10 @@
     "db:import": "tsx --env-file=.env.local scripts/import-synthea.ts",
     "db:wearables": "tsx --env-file=.env.local scripts/generate-wearables.ts",
     "db:check": "tsx --env-file=.env.local scripts/check-data.ts",
-    "samples": "tsx --env-file=.env.local scripts/make-samples.ts"
+    "samples": "tsx --env-file=.env.local scripts/make-samples.ts",
+    "db:follow-ups": "tsx --env-file=.env.local scripts/follow-ups.ts",
+    "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
+    "demo:lab": "tsx --env-file=.env.local scripts/demo-lab.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.110",

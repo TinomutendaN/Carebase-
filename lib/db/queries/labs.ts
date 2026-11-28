@@ -1,6 +1,7 @@
 import { sql } from "@/lib/db/client";
-import { labShortName, MAIN_LAB_GROUPS, rangeCaption } from "@/lib/lab-display";
-import { labRange } from "@/lib/lab-ranges";
+import { createFollowUps } from "@/lib/follow-ups";
+import { labShortName, labStatus, MAIN_LAB_GROUPS, rangeCaption } from "@/lib/lab-display";
+import { labRange, roundLabValue } from "@/lib/lab-ranges";
 
 /**
  * Lab results for the Patient page and the labs API. Callers must check
@@ -77,5 +78,37 @@ export async function getLabSeries(patientId: string, code: string): Promise<Lab
     high,
     rangeLabel: rangeCaption(code, low, high, unit),
     points: rows.map((r) => ({ id: r.id, date: r.date, value: Number(r.value) })),
+  };
+}
+
+export type AddedLabResult = {
+  resultId: number;
+  outOfRange: boolean;
+  followUps: Awaited<ReturnType<typeof createFollowUps>>;
+};
+
+/**
+ * Record a new lab result for a patient, then run the follow-up rule for them,
+ * so an out-of-range result creates (or updates) a task by itself. The lab's
+ * name and unit come from earlier results with the same code, and its normal
+ * range from lib/lab-ranges.ts. Callers check access first.
+ */
+export async function addLabResult(input: { patientId: string; code: string; value: number }): Promise<AddedLabResult> {
+  const range = labRange(input.code);
+  if (!range) throw new Error(`No normal range is held for lab code ${input.code}.`);
+  const known = await sql`SELECT name, unit FROM lab_results WHERE code = ${input.code} LIMIT 1`;
+  if (known.length === 0) throw new Error(`No earlier result has lab code ${input.code}, so its name and unit are unknown.`);
+
+  const value = roundLabValue(input.code, input.value);
+  const rows = await sql`
+    INSERT INTO lab_results (patient_id, code, name, value, unit, normal_low, normal_high, taken_at)
+    VALUES (${input.patientId}, ${input.code}, ${known[0].name}, ${value}, ${known[0].unit}, ${range.low}, ${range.high}, now())
+    RETURNING id::int AS id
+  `;
+  const status = labStatus(value, range.low, range.high);
+  return {
+    resultId: Number(rows[0].id),
+    outOfRange: status === "above" || status === "below",
+    followUps: await createFollowUps({ patientId: input.patientId }),
   };
 }

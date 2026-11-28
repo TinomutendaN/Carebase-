@@ -20,7 +20,9 @@ export const ROLE_SUMMARIES: Record<Role, string> = {
   admin: "Everything, plus the audit log, roles, and de-identified export",
 };
 
-export const AREAS = ["intake", "patient_records", "lab_results", "assistant", "tasks", "audit_export"] as const;
+export const AREAS = [
+  "intake", "patient_records", "lab_results", "assistant", "tasks", "tasks_all", "audit_export", "demo_tools",
+] as const;
 export type Area = (typeof AREAS)[number];
 
 export const AREA_LABELS: Record<Area, string> = {
@@ -29,7 +31,9 @@ export const AREA_LABELS: Record<Area, string> = {
   lab_results: "Lab results",
   assistant: "Assistant",
   tasks: "Tasks",
+  tasks_all: "All tasks",
   audit_export: "Audit log and export",
+  demo_tools: "Demo tools",
 };
 
 export const ACCESS: Record<Area, Record<Role, boolean>> = {
@@ -38,11 +42,27 @@ export const ACCESS: Record<Area, Record<Role, boolean>> = {
   lab_results:     { front_desk: false, clinician: true,  admin: true },
   assistant:       { front_desk: false, clinician: true,  admin: true },
   tasks:           { front_desk: true,  clinician: true,  admin: true },
+  // Everyone's tasks, with assignees. Without it you see only tasks assigned to you.
+  tasks_all:       { front_desk: false, clinician: false, admin: true },
   audit_export:    { front_desk: false, clinician: false, admin: true },
+  // "Simulate lab result (demo)" on the Tasks screen.
+  demo_tools:      { front_desk: false, clinician: false, admin: true },
 };
 
 export function can(role: Role, area: Area): boolean {
   return ACCESS[area][role];
+}
+
+/** Whose tasks a list or count covers: everyone's (tasks_all) or only the account's own. */
+export type TaskScope = { all: boolean; accountId: number };
+
+export function taskScope(role: Role, accountId: number): TaskScope {
+  return { all: can(role, "tasks_all"), accountId };
+}
+
+/** You can complete your own tasks; tasks_all lets you complete anyone's. */
+export function canCompleteTask(role: Role, accountId: number, assigneeId: number): boolean {
+  return assigneeId === accountId || can(role, "tasks_all");
 }
 
 export function isRole(value: unknown): value is Role {

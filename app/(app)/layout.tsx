@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { Sidebar, SidebarSkeleton } from "@/components/shell/Sidebar";
 import { Banner } from "@/components/ui/Banner";
+import { taskScope } from "@/lib/access";
 import { getSidebarCounts } from "@/lib/db/queries/sidebar";
 import { getSession } from "@/lib/session";
 
@@ -26,6 +27,6 @@ async function SessionSidebar() {
   // proxy.ts only checks the cookie exists; this checks it names a real account.
   if (!session) redirect("/");
 
-  const counts = await getSidebarCounts(session.accountId);
+  const counts = await getSidebarCounts(taskScope(session.role, session.accountId));
   return <Sidebar role={session.role} account={session} counts={counts} />;
 }

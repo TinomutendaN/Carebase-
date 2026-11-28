@@ -6,8 +6,14 @@ import { sql } from "@/lib/db/client";
  * which record, and when (set by the database). Failures throw, never fail silently.
  */
 
-/** Who did it. A Session fits this shape. */
-export type Actor = { email: string; role: Role };
+/** Who did it. A Session fits this shape; automatic actions use SYSTEM_ACTOR. */
+export type Actor = { email: string; role: Role | "system" };
+
+/**
+ * Automatic actions with no person behind them, such as follow-up tasks created
+ * from lab results. Recorded honestly as the system, not as the assignee.
+ */
+export const SYSTEM_ACTOR: Actor = { email: "follow-ups@carebase.demo", role: "system" };
 
 /** Which record, e.g. { type: "patient", id: "…", label: "Marcus Holloway" }. */
 export type AuditRecord = { type: string; id?: string; label?: string };

@@ -29,6 +29,11 @@ const SHORT_NAMES: Record<string, string> = {
   "4544-3": "Hematocrit",
   "6299-2": "Urea nitrogen",
   "3094-0": "Urea nitrogen",
+  "5811-5": "Urine specific gravity",
+  "5803-2": "Urine pH",
+  "5792-7": "Urine glucose",
+  "5804-0": "Urine protein",
+  "5797-6": "Urine ketones",
 };
 
 /** "HbA1c", or the long name cut before its first bracket ("Sodium [Moles/volume] in Blood" → "Sodium"). */
@@ -73,6 +78,13 @@ export function statusSentence(code: string, value: number, low: number | null, 
   const status = labStatus(value, low, high);
   const lead = status === "above" ? "Above normal range" : status === "below" ? "Below normal range" : "Within normal range";
   return `${lead} (${text})`;
+}
+
+/** "7.3%", "3.1 mmol/L"; units in braces ("{nominal}") are left off. For task text. */
+export function labValueText(value: number, unit: string): string {
+  if (unit === "%") return `${value}%`;
+  if (!unit || unit.startsWith("{")) return String(value);
+  return `${value} ${unit}`;
 }
 
 /** "7.3 %" or "130 mg/dL", the value as stored. */
