@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from "react";
 import { rangeStatus } from "@/components/charts/LabTrendChart";
 import { ResponsiveLabTrendChart } from "@/components/charts/ResponsiveLabTrendChart";
 import { IconChip } from "@/components/ui/IconChip";
@@ -8,6 +8,7 @@ import { LockIcon, PulseIcon } from "@/components/ui/icons";
 import { Panel } from "@/components/ui/Panel";
 import { Pill, PillGroup } from "@/components/ui/Pill";
 import type { LabCode, LabSeries } from "@/lib/db/queries/labs";
+import { highlight, onShowLab } from "@/lib/record-focus";
 
 const STATUS_WORDS = { in: "IN RANGE", above: "ABOVE RANGE", below: "BELOW RANGE" } as const;
 
@@ -30,6 +31,17 @@ export function LabTrendsPanel({ patientId, labs, initial, children }: Props) {
   const [code, setCode] = useState(initial?.code ?? labs?.[0]?.code ?? "");
   const [cache, setCache] = useState<Record<string, LabSeries>>(initial ? { [initial.code]: initial } : {});
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  // Assistant source links to a lab result the Timeline doesn't list: show its lab here.
+  const showLab = useEffectEvent((next: string) => {
+    void pick(next);
+    if (chartRef.current) highlight(chartRef.current);
+  });
+  useEffect(() => {
+    if (locked) return;
+    return onShowLab(({ code: next }) => showLab(next));
+  }, [locked]);
 
   async function pick(next: string) {
     setCode(next);
@@ -85,7 +97,7 @@ export function LabTrendsPanel({ patientId, labs, initial, children }: Props) {
       </div>
 
       <div className="flex flex-wrap gap-4">
-        <div className="flex min-w-0 flex-[2_1_440px] flex-col gap-2.5 rounded-[20px] border border-white/8 bg-[rgba(3,16,26,0.45)] px-[18px] py-4">
+        <div ref={chartRef} className="flex min-w-0 flex-[2_1_440px] flex-col gap-2.5 rounded-[20px] border border-white/8 bg-[rgba(3,16,26,0.45)] px-[18px] py-4">
           {locked ? (
             <LockedLabs />
           ) : series && status !== "loading" ? (

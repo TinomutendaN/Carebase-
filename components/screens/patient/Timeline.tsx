@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cx } from "@/lib/cx";
 import type { TimelineEntry } from "@/lib/db/queries/patients";
 import { capitalize, formatDatePadded } from "@/lib/format";
 import { formatLabValue, labShortName, labStatus, statusSentence } from "@/lib/lab-display";
+import { highlight, onFocusRecord } from "@/lib/record-focus";
 
 const PAGE = 10;
 
@@ -61,8 +62,28 @@ export function Timeline({ entries, labsHidden, canViewDocuments }: {
   canViewDocuments: boolean;
 }) {
   const [shown, setShown] = useState(PAGE);
+  const [focus, setFocus] = useState<{ anchor: string } | null>(null);
   const rows = entries.map(toRow);
   const left = rows.length - shown;
+
+  // Assistant source links: show enough rows to include the one asked for.
+  useEffect(
+    () =>
+      onFocusRecord((detail) => {
+        const index = entries.findIndex((e) => e.id === detail.anchor);
+        if (index < 0) return;
+        detail.handled = true;
+        setShown((n) => Math.max(n, Math.ceil((index + 1) / PAGE) * PAGE));
+        setFocus({ anchor: detail.anchor });
+      }),
+    [entries],
+  );
+
+  // Runs after the render that added the row (both updates come from one event).
+  useEffect(() => {
+    const element = focus && document.getElementById(focus.anchor);
+    if (element) highlight(element);
+  }, [focus]);
 
   return (
     <section

@@ -1,9 +1,13 @@
+import type { ReactNode } from "react";
 import { gradientFor } from "@/components/ui/Avatar";
 import type { PatientSummary } from "@/lib/db/queries/patients";
 import { formatDate } from "@/lib/format";
 
-/** Initials, name, MRN / age / sex chips and last visit (designs/source/03-patient.html). */
-export function PatientHeader({ patient }: { patient: PatientSummary }) {
+/**
+ * Initials, name, MRN / age / sex chips and last visit (designs/source/03-patient.html).
+ * `actions` sits after the last visit: the "Ask assistant" button for roles that have it.
+ */
+export function PatientHeader({ patient, actions }: { patient: PatientSummary; actions?: ReactNode }) {
   return (
     <section
       aria-label="Patient"
@@ -28,9 +32,12 @@ export function PatientHeader({ patient }: { patient: PatientSummary }) {
           </div>
         </div>
       </div>
-      <span className="text-xs text-secondary">
-        {patient.lastVisit ? `Last visit ${formatDate(patient.lastVisit)}` : "No visits recorded"}
-      </span>
+      <div className="flex flex-wrap items-center gap-3.5">
+        <span className="text-xs text-secondary">
+          {patient.lastVisit ? `Last visit ${formatDate(patient.lastVisit)}` : "No visits recorded"}
+        </span>
+        {actions}
+      </div>
     </section>
   );
 }

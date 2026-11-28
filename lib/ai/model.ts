@@ -1,6 +1,6 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
-import type { LanguageModel } from "ai";
+import type { EmbeddingModel, LanguageModel } from "ai";
 
 /** The one place the model is chosen. Switch providers with AI_PROVIDER. */
 
@@ -35,4 +35,19 @@ export function getModel(): LanguageModel {
     throw new Error(`${settings[provider].modelVar} is not set.`);
   }
   return settings[provider].create(name);
+}
+
+/** text-embedding-3-small returns 1536 dimensions, matching evidence_chunks.embedding. */
+export const DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small";
+
+export function getEmbeddingModelName(): string {
+  return process.env.OPENAI_EMBEDDING_MODEL?.trim() || DEFAULT_EMBEDDING_MODEL;
+}
+
+/**
+ * The evidence library's embedding model. Always OpenAI, even when chat runs on
+ * Anthropic (Anthropic has no embedding model). Needs OPENAI_API_KEY.
+ */
+export function getEmbeddingModel(): EmbeddingModel {
+  return openai.embedding(getEmbeddingModelName());
 }

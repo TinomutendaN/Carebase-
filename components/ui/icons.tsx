@@ -251,3 +251,44 @@ export const BoltIcon = (p: IconProps) => (
     <path d="M13 2L4 14h7l-1 8 9-12h-7z" />
   </Icon>
 );
+
+/** The assistant's mark: one large and one small four-point spark. */
+export const SparkleIcon = (p: IconProps) => (
+  <Icon size={17} strokeWidth={2} {...p}>
+    <path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z" />
+    <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" />
+  </Icon>
+);
+
+/** Drag handle: six dots, filled as in the design (designs/source/03-patient.html). */
+export const GripIcon = ({ size = 16, className }: IconProps) => (
+  <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <circle cx="9" cy="6" r="1.6" />
+    <circle cx="15" cy="6" r="1.6" />
+    <circle cx="9" cy="12" r="1.6" />
+    <circle cx="15" cy="12" r="1.6" />
+    <circle cx="9" cy="18" r="1.6" />
+    <circle cx="15" cy="18" r="1.6" />
+  </svg>
+);
+
+export const CloseIcon = (p: IconProps) => (
+  <Icon size={16} strokeWidth={2.2} {...p}>
+    <path d="M6 6l12 12" />
+    <path d="M18 6L6 18" />
+  </Icon>
+);
+
+export const ShieldIcon = (p: IconProps) => (
+  <Icon size={12} strokeWidth={2.4} {...p}>
+    <path d="M12 3l8 3v6c0 4.5-3.4 8.4-8 9-4.6-.6-8-4.5-8-9V6z" />
+  </Icon>
+);
+
+export const ExternalLinkIcon = (p: IconProps) => (
+  <Icon size={11} strokeWidth={2.2} {...p}>
+    <path d="M14 4h6v6" />
+    <path d="M20 4l-9 9" />
+    <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+  </Icon>
+);

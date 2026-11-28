@@ -13,6 +13,7 @@ export function ConditionsCard({ conditions }: { conditions: Condition[] }) {
 
   return (
     <section
+      id="conditions"
       aria-labelledby="cond-title"
       className="flex flex-[2_1_380px] flex-col gap-1.5 rounded-[22px] border border-hairline/90 bg-linear-to-b from-surface to-surface-soft p-5 shadow-card"
     >

@@ -15,7 +15,8 @@
     "samples": "tsx --env-file=.env.local scripts/make-samples.ts",
     "db:follow-ups": "tsx --env-file=.env.local scripts/follow-ups.ts",
     "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
-    "demo:lab": "tsx --env-file=.env.local scripts/demo-lab.ts"
+    "demo:lab": "tsx --env-file=.env.local scripts/demo-lab.ts",
+    "evidence:build": "tsx --env-file=.env.local scripts/build-evidence.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.110",

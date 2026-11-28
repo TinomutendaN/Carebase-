@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import { Assistant } from "@/components/screens/assistant/Assistant";
 import { AllergiesCard } from "@/components/screens/patient/AllergiesCard";
 import { ConditionsCard } from "@/components/screens/patient/ConditionsCard";
 import { LabTrendsPanel } from "@/components/screens/patient/LabTrendsPanel";
@@ -64,7 +65,10 @@ async function PatientRecord({ params }: { params: PageProps<"/patients/[id]">["
 
   return (
     <>
-      <PatientHeader patient={patient} />
+      <PatientHeader
+        patient={patient}
+        actions={can(session.role, "assistant") ? <Assistant patientId={patient.id} patientName={patient.name} /> : null}
+      />
       <LabTrendsPanel patientId={patient.id} labs={labs} initial={initial}>
         <WearableCards wearables={wearables} />
       </LabTrendsPanel>

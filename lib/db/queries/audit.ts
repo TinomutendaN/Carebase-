@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db/client";
+import { clinicTimeZone } from "@/lib/clinic-date";
 import { initialsOf, timeAgo } from "@/lib/format";
 
 export type RecentPatient = {
@@ -39,4 +40,16 @@ export async function getRecentlyViewed(email: string, limit = 6): Promise<Recen
     viewedAt: new Date(r.viewed_at).toISOString(),
     viewedLabel: timeAgo(new Date(r.viewed_at).toISOString()),
   }));
+}
+
+/** The audit action for every assistant question. The daily cap counts these rows. */
+export const ASKED_ASSISTANT = "Asked the assistant about";
+
+/** Assistant questions asked today (clinic time zone), by everyone: the demo accounts are shared. */
+export async function countAssistantQuestionsToday(today: string): Promise<number> {
+  const rows = await sql`
+    SELECT count(*)::int AS n FROM audit_log
+    WHERE action = ${ASKED_ASSISTANT} AND (occurred_at AT TIME ZONE ${clinicTimeZone()})::date = ${today}::date
+  `;
+  return Number(rows[0].n);
 }

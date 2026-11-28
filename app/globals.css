@@ -130,3 +130,11 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .intake-beam { animation: none; top: 45%; }
 }
+
+/* Assistant source links: the record a chip points to glows amber for a moment (lib/record-focus.ts). */
+[data-focused="true"] {
+  border-radius: 12px;
+  background-color: rgba(251, 191, 36, 0.14);
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.55);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}

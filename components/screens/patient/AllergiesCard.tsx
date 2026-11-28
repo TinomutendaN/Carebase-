@@ -7,7 +7,7 @@ const CARD =
 /** Allergy pills: severe in red, others in amber. */
 export function AllergiesCard({ allergies }: { allergies: Allergy[] }) {
   return (
-    <section aria-labelledby="allergy-title" className={cx(CARD, "flex-[1_1_260px]")}>
+    <section id="allergies" aria-labelledby="allergy-title" className={cx(CARD, "flex-[1_1_260px]")}>
       <h2 id="allergy-title" className="m-0 text-xs font-bold tracking-[0.12em] text-label">
         ALLERGIES
       </h2>
