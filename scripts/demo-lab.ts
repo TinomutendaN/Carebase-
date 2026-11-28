@@ -23,7 +23,9 @@ async function main() {
   console.log(`Lab result #${added.resultId} added for ${rows[0].name}: ${values.code} = ${value} (${added.outOfRange ? "out of range" : "in range"}).`);
   for (const t of added.followUps.created) console.log(`  + task #${t.taskId}: ${t.title}, due ${t.dueOn}`);
   for (const t of added.followUps.updated) console.log(`  ~ task #${t.taskId}: ${t.title}, due ${t.dueOn}`);
-  if (!added.followUps.created.length && !added.followUps.updated.length) console.log("  No task change.");
+  for (const t of added.followUps.reopened) console.log(`  ↺ task #${t.taskId} reopened: ${t.title}, due ${t.dueOn}`);
+  const { created, updated, reopened } = added.followUps;
+  if (!created.length && !updated.length && !reopened.length) console.log("  No task change.");
 }
 
 main().catch((error) => {

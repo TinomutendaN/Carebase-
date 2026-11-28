@@ -47,16 +47,23 @@ export async function POST(request: Request) {
     out_of_range: added.outOfRange,
     tasks_created: added.followUps.created.map((t) => t.taskId),
     tasks_updated: added.followUps.updated.map((t) => t.taskId),
+    tasks_reopened: added.followUps.reopened.map((t) => t.taskId),
   });
 
   const created = added.followUps.created[0];
   const updated = added.followUps.updated[0];
+  const reopened = added.followUps.reopened[0];
   const message = created
     ? `Task created for ${patient.name}: ${created.title}.`
-    : updated
+    : reopened
+      ? `${patient.name}'s task for today was done, so it was reopened: ${reopened.title}.`
+      : updated
       ? `${patient.name}'s task for today was updated: ${updated.title}.`
       : added.outOfRange
         ? `Result added for ${patient.name}. Today's task already covers it.`
         : `Result added for ${patient.name}. It's in range, so no task is needed.`;
-  return Response.json({ message, created: Boolean(created), updated: Boolean(updated) }, { headers: NO_STORE });
+  return Response.json(
+    { message, created: Boolean(created), updated: Boolean(updated), reopened: Boolean(reopened) },
+    { headers: NO_STORE },
+  );
 }

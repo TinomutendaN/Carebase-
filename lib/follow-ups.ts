@@ -9,8 +9,8 @@ import { labShortName, labStatus, labValueText } from "@/lib/lab-display";
  * detail. Assigned to the clinician, due 2 days after the result.
  *
  * Safe to run any number of times: a (patient, lab day) that already has a task
- * is never given a second one. If new results arrive for a day whose task is
- * still open, that task is updated instead. Run after importing
+ * is never given a second one. If new results arrive for a day that already has
+ * a task, that task is updated (or reopened, if it was done). Run after importing
  * (npm run db:follow-ups) and whenever a lab result is added (addLabResult).
  */
 
@@ -40,9 +40,9 @@ type Direction = "above" | "below";
 const PRIORITY: { codes: string[]; only?: Direction }[] = [
   { codes: ["4548-4"], only: "above" }, // HbA1c
   { codes: ["2339-0", "2345-7"] }, // Glucose
-  { codes: ["18262-6"] }, // LDL
   { codes: ["2160-0", "38483-4"] }, // Creatinine
   { codes: ["33914-3"] }, // eGFR
+  { codes: ["18262-6"] }, // LDL
   { codes: ["6298-4", "2823-3"] }, // Potassium
   { codes: ["2947-0", "2951-2"] }, // Sodium
 ];
@@ -97,8 +97,15 @@ export type FollowUpChange = {
   dueOn: string;
 };
 
-type ResultRow = OutOfRangeResult & { patientId: string; patientName: string; labDay: string };
-type TaskRow = { id: number; status: string; title: string; detail: string | null; labResultId: number | null };
+type ResultRow = OutOfRangeResult & { patientId: string; patientName: string; labDay: string; addedAt: number };
+type TaskRow = {
+  id: number;
+  status: string;
+  title: string;
+  detail: string | null;
+  labResultId: number | null;
+  completedAt: number | null;
+};
 
 /**
  * Create (or update) follow-up tasks for recent out-of-range results.
@@ -107,6 +114,7 @@ type TaskRow = { id: number; status: string; title: string; detail: string | nul
 export async function createFollowUps(options: { patientId?: string; windowDays?: number } = {}): Promise<{
   created: FollowUpChange[];
   updated: FollowUpChange[];
+  reopened: FollowUpChange[];
 }> {
   const windowDays = options.windowDays ?? FOLLOW_UP_WINDOW_DAYS;
   const patientId = options.patientId ?? null;
@@ -118,7 +126,7 @@ export async function createFollowUps(options: { patientId?: string; windowDays?
     SELECT l.id::int AS id, l.patient_id, l.code, l.name, l.value::float8 AS value, l.unit,
            l.normal_low::float8 AS low, l.normal_high::float8 AS high,
            (l.taken_at AT TIME ZONE ${tz})::date::text AS lab_day,
-           p.first_name || ' ' || p.last_name AS patient_name
+           l.created_at, p.first_name || ' ' || p.last_name AS patient_name
     FROM lab_results l
     JOIN patients p ON p.id = l.patient_id
     WHERE (l.value < l.normal_low OR l.value > l.normal_high)
@@ -138,8 +146,9 @@ export async function createFollowUps(options: { patientId?: string; windowDays?
     unit: r.unit,
     low: r.low == null ? null : Number(r.low),
     high: r.high == null ? null : Number(r.high),
+    addedAt: new Date(r.created_at).getTime(),
   }));
-  if (results.length === 0) return { created: [], updated: [] };
+  if (results.length === 0) return { created: [], updated: [], reopened: [] };
 
   const groups = new Map<string, ResultRow[]>();
   for (const r of results) {
@@ -148,7 +157,8 @@ export async function createFollowUps(options: { patientId?: string; windowDays?
   }
 
   const taskRows = await sql`
-    SELECT id::int AS id, patient_id, lab_day::text AS lab_day, status, title, detail, lab_result_id::int AS lab_result_id
+    SELECT id::int AS id, patient_id, lab_day::text AS lab_day, status, title, detail,
+           lab_result_id::int AS lab_result_id, completed_at
     FROM tasks
     WHERE source = 'lab' AND lab_day BETWEEN ${firstDay}::date AND ${today}::date
       AND (${patientId}::uuid IS NULL OR patient_id = ${patientId}::uuid)
@@ -156,13 +166,21 @@ export async function createFollowUps(options: { patientId?: string; windowDays?
   const existing = new Map<string, TaskRow>(
     taskRows.map((t) => [
       `${t.patient_id}|${t.lab_day}`,
-      { id: Number(t.id), status: t.status, title: t.title, detail: t.detail, labResultId: t.lab_result_id == null ? null : Number(t.lab_result_id) },
+      {
+        id: Number(t.id),
+        status: t.status,
+        title: t.title,
+        detail: t.detail,
+        labResultId: t.lab_result_id == null ? null : Number(t.lab_result_id),
+        completedAt: t.completed_at == null ? null : new Date(t.completed_at).getTime(),
+      },
     ]),
   );
 
   const assignee = await clinicianAccount();
   const created: FollowUpChange[] = [];
   const updated: FollowUpChange[] = [];
+  const reopened: FollowUpChange[] = [];
 
   // Oldest lab day first, so the newest result's task is the one created last
   // (the "latest" in the Automatic follow-ups panel).
@@ -197,8 +215,30 @@ export async function createFollowUps(options: { patientId?: string; windowDays?
       continue;
     }
 
-    // A reviewed (done) task is left as it is.
-    if (task.status !== "open") continue;
+    if (task.status === "done") {
+      // Reopen only for results that arrived after the task was completed; a
+      // reviewed task stays done when nothing new has come in.
+      const arrivedAfter = group.filter((r) => task.completedAt != null && r.addedAt > task.completedAt);
+      if (arrivedAfter.length === 0) continue;
+      const opened = await sql`
+        UPDATE tasks SET status = 'open', completed_at = NULL, title = ${title}, detail = ${detail}, lab_result_id = ${main.id}
+        WHERE id = ${task.id} AND status = 'done'
+        RETURNING id
+      `;
+      if (opened.length === 0) continue;
+      reopened.push({ taskId: task.id, ...change });
+      await logChange(SYSTEM_ACTOR, "Reopened follow-up task", { type: "task", id: String(task.id), label: patientName }, {
+        title,
+        ...(task.title !== title ? { previous_title: task.title } : {}),
+        title_changed: task.title !== title,
+        lab_result_id: main.id,
+        new_result_ids: arrivedAfter.map((r) => r.id),
+        result_ids: group.map((r) => r.id),
+        results: group.length,
+      });
+      continue;
+    }
+
     if (task.title === title && task.detail === detail && task.labResultId === main.id) continue;
 
     const changed = await sql`
@@ -218,7 +258,7 @@ export async function createFollowUps(options: { patientId?: string; windowDays?
     });
   }
 
-  return { created, updated };
+  return { created, updated, reopened };
 }
 
 /** Lab follow-ups go to the clinician (the first clinician account). */

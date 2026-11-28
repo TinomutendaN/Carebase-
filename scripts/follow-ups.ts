@@ -7,11 +7,12 @@ import { createFollowUps, FOLLOW_UP_WINDOW_DAYS } from "../lib/follow-ups";
 
 async function main() {
   console.log(`Clinic today: ${clinicToday()} (${clinicTimeZone()}), looking back ${FOLLOW_UP_WINDOW_DAYS} days.`);
-  const { created, updated } = await createFollowUps();
+  const { created, updated, reopened } = await createFollowUps();
   for (const t of created) console.log(`  + #${t.taskId} ${t.patientName} (${t.labDay}): ${t.title}, due ${t.dueOn}`);
   for (const t of updated) console.log(`  ~ #${t.taskId} ${t.patientName} (${t.labDay}): ${t.title}, due ${t.dueOn}`);
-  if (created.length === 0 && updated.length === 0) console.log("0 new (already up to date).");
-  else console.log(`${created.length} created, ${updated.length} updated.`);
+  for (const t of reopened) console.log(`  ↺ #${t.taskId} ${t.patientName} (${t.labDay}): ${t.title}, due ${t.dueOn}`);
+  if (created.length + updated.length + reopened.length === 0) console.log("0 new (already up to date).");
+  else console.log(`${created.length} created, ${updated.length} updated, ${reopened.length} reopened.`);
 }
 
 main().catch((error) => {
